@@ -1,0 +1,17 @@
+{
+    "appId": "com.example.app",
+    "appName": "Mercyh Software Solutions",
+    "webDir": "www",
+    "bundledWebRuntime": false,
+    "android": {
+      "path": "android",
+      "buildOptions": {
+        "keystorePath": "C:\\Users\\HP\\ANGULAR-REACT\\nmds\\android\\my-release-key.keystore",
+        "keystorePassword": "0731871469",
+        "keystoreAlias": "correct-alias",
+        "keystoreAliasPassword": "0731871469"
+      }
+    }
+  }
+  
+  

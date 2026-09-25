@@ -1,0 +1,12 @@
+{
+  "expo": {
+    "extra": {
+      "eas": {
+        "projectId": "2c0ab28d-6cbc-4f4e-8186-7f570df27927"
+      }
+    },
+    "android": {
+      "package": "com.moroesiphantsi.mercyhsoftwaresolutions"
+    }
+  }
+}
