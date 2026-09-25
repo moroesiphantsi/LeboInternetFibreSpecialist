@@ -207,7 +207,7 @@ export default function Home() {
         <div className="mefane-container mefane-topbar-inner">
           <div className="mefane-topbar-location">
             <MapPin style={{ fontSize: "16px" }} />
-            <span>Serving: Maseru | Mafeteng | Berea | Mohale&apos;s Hoek</span>
+            <span>Serving: Lesotho | South Africa</span>
           </div>
           <div className="mefane-topbar-contact">
             <a href="tel:63740151">
@@ -434,7 +434,7 @@ export default function Home() {
 
             <div className="mefane-about-location">
               <MapPin className="mefane-gold-light" />
-              <span>Serving Areas: <strong>Maseru | Mafeteng | Berea | Mohale&apos;s Hoek</strong></span>
+              <span>Serving Areas: <strong>Lesotho | South Africa</strong></span>
             </div>
           </div>
 
@@ -544,7 +544,7 @@ export default function Home() {
                 <div className="mefane-contact-icon"><MapPin /></div>
                 <div>
                   <h4>Serving Areas</h4>
-                  <span style={{ color: "white", fontWeight: 700, fontSize: "14px" }}>Maseru | Mafeteng | Berea | Mohale&apos;s Hoek</span>
+                  <span style={{ color: "white", fontWeight: 700, fontSize: "14px" }}>Lesotho | South Africa</span>
                 </div>
               </div>
             </div>
