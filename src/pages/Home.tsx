@@ -245,7 +245,7 @@ export default function Home() {
           </nav>
 
           <a href="#contact" className="mefane-btn mefane-btn-primary">
-            Get a Quote
+            Request Engineering Services
           </a>
 
           <button
@@ -273,7 +273,7 @@ export default function Home() {
               className="mefane-btn mefane-btn-primary"
               style={{ width: "100%" }}
             >
-              Get a Quote
+              Request Engineering Services
             </a>
           </div>
         </div>
