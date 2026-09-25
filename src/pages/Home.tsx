@@ -167,11 +167,35 @@ export default function Home() {
       : portfolioItems.filter((item) => item.category === activeCategory);
 
   /* ----------------------------------------
-     FORM SUBMIT
+     FORM SUBMIT → WHATSAPP
   ----------------------------------------- */
   const handleFormSubmit = (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
-    alert("Thank you! Your message has been received by Mefane Engineering. We will call you shortly.");
+
+    const form = event.currentTarget;
+    const formData = new FormData(form);
+
+    const name = String(formData.get("name") || "").trim();
+    const phone = String(formData.get("phone") || "").trim();
+    const service = String(formData.get("service") || "").trim();
+    const details = String(formData.get("details") || "").trim();
+
+    const whatsappNumber = "26659619361";
+
+    const message = [
+      "Hello Mefane Engineering,",
+      "",
+      "I would like to request an engineering quote.",
+      "",
+      `*Your Name:* ${name}`,
+      `*Phone Number:* ${phone}`,
+      `*Service Required:* ${service}`,
+      `*Project Details:* ${details}`,
+    ].join("\n");
+
+    const whatsappUrl = `https://wa.me/${whatsappNumber}?text=${encodeURIComponent(message)}`;
+
+    window.open(whatsappUrl, "_blank", "noopener,noreferrer");
   };
 
   return (
@@ -534,17 +558,17 @@ export default function Home() {
               <div className="mefane-form-grid">
                 <div className="mefane-field">
                   <label htmlFor="name">Your Name</label>
-                  <input id="name" type="text" required placeholder="e.g. John Molefi" />
+                  <input id="name" name="name" type="text" required placeholder="e.g. John Molefi" />
                 </div>
                 <div className="mefane-field">
                   <label htmlFor="phone">Phone Number</label>
-                  <input id="phone" type="tel" required placeholder="e.g. +266 ..." />
+                  <input id="phone" name="phone" type="tel" required placeholder="e.g. +266 ..." />
                 </div>
               </div>
 
               <div className="mefane-field full">
                 <label htmlFor="service">Service Required</label>
-                <select id="service">
+                <select id="service" name="service" required>
                   <option>Electrical Installations</option>
                   <option>Plumbing Services</option>
                   <option>Brick-laying & Construction</option>
@@ -558,7 +582,7 @@ export default function Home() {
 
               <div className="mefane-field full">
                 <label htmlFor="details">Project Details</label>
-                <textarea id="details" rows={4} placeholder="Describe your project size, location, and requirements..."></textarea>
+                <textarea id="details" name="details" rows={4} required placeholder="Describe your project size, location, and requirements..."></textarea>
               </div>
 
               <button type="submit" className="mefane-btn mefane-btn-primary" style={{ width: "100%", marginTop: "10px" }}>
