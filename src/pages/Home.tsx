@@ -18,6 +18,11 @@ import {
   Layers,
   AutoAwesome as Sparkles,
   Fullscreen as Maximize2,
+  Business as Building,
+  Restaurant,
+  Kitchen,
+  Handyman,
+  PlaceOutlined as PinOutline,
 } from "@mui/icons-material";
 import './Home.css';
 
@@ -31,6 +36,18 @@ interface PortfolioItem {
 interface ServiceItem {
   title: string;
   description: string;
+  icon: React.ReactNode;
+}
+
+interface CompanyItem {
+  name: string;
+  tag: string;
+  location?: string;
+  description: string;
+  highlights: string[];
+  phone?: string;
+  phoneHref?: string;
+  phoneNote?: string;
   icon: React.ReactNode;
 }
 
@@ -120,6 +137,49 @@ export default function Home() {
       title: "Roofing",
       description: "Roof construction, waterproofing, tile replacements, sheeting, and gutter installations.",
       icon: <Sparkles fontSize="large" />,
+    },
+  ];
+
+  /* ----------------------------------------
+     COMPANIES WORKED WITH
+  ----------------------------------------- */
+  const companies: CompanyItem[] = [
+    {
+      name: "Nimble Tech Engineering",
+      tag: "Worked With",
+      description: "Hands-on engineering and maintenance work carried out together with the Nimble Tech Engineering team.",
+      highlights: ["Engineering", "Maintenance", "Site Work"],
+      phone: "+266 5610 5510",
+      phoneHref: "tel:+26656105510",
+      icon: <Building fontSize="large" />,
+    },
+    {
+      name: "Electro Fresh",
+      tag: "Worked With",
+      description: "Technical work carried out together with the Electro Fresh team.",
+      highlights: ["Electrical", "Refrigeration", "Maintenance"],
+      phone: "5712 5414",
+      phoneHref: "tel:57125414",
+      icon: <Kitchen fontSize="large" />,
+    },
+    {
+      name: "Hungry Lion",
+      tag: "Worked At",
+      location: "Mohale's Hoek",
+      description: "Worked at the Hungry Lion Mohale's Hoek branch under Nimble Tech Engineering.",
+      highlights: ["On-site Work", "Via Nimble Tech Engineering"],
+      phone: "+266 5610 5510",
+      phoneHref: "tel:+26656105510",
+      phoneNote: "Nimble Tech Engineering",
+      icon: <Restaurant fontSize="large" />,
+    },
+    {
+      name: "Jundralls",
+      tag: "Worked With",
+      location: "Mohale's Hoek",
+      description: "Electrical and plumbing maintenance carried out together with Jundralls in Mohale's Hoek.",
+      highlights: ["Electrical Maintenance", "Plumbing Maintenance"],
+      icon: <Handyman fontSize="large" />,
     },
   ];
 
@@ -227,9 +287,11 @@ export default function Home() {
       <header className={`mefane-navbar ${scrolled ? "scrolled" : ""}`}>
         <div className="mefane-container mefane-navbar-inner">
           <a href="#home" className="mefane-logo">
-            <div className="mefane-logo-icon">
-              <Zap style={{ fontSize: "24px" }} />
-            </div>
+            <img
+              src={require("../assets/MELogo.png")}
+              alt="Mefane Engineering logo"
+              className="mefane-logo-img"
+            />
             <div>
               <div className="mefane-logo-name">MEFANE</div>
               <div className="mefane-logo-subtitle">Engineering</div>
@@ -240,6 +302,7 @@ export default function Home() {
             <a href="#home">Home</a>
             <a href="#services">Services</a>
             <a href="#about">About Us</a>
+            <a href="#experience">Experience</a>
             <a href="#portfolio">Portfolio</a>
             <a href="#contact">Contact</a>
           </nav>
@@ -264,6 +327,7 @@ export default function Home() {
           <a href="#home" onClick={() => setMobileMenuOpen(false)}>Home</a>
           <a href="#services" onClick={() => setMobileMenuOpen(false)}>Services</a>
           <a href="#about" onClick={() => setMobileMenuOpen(false)}>About Us</a>
+          <a href="#experience" onClick={() => setMobileMenuOpen(false)}>Experience</a>
           <a href="#portfolio" onClick={() => setMobileMenuOpen(false)}>Portfolio</a>
           <a href="#contact" onClick={() => setMobileMenuOpen(false)}>Contact</a>
           <div style={{ marginTop: "15px" }}>
@@ -442,6 +506,75 @@ export default function Home() {
       </section>
 
       {/* ========================================
+          COMPANIES I HAVE WORKED WITH
+      ========================================= */}
+      <section id="experience" className="mefane-section mefane-experience">
+        <div className="mefane-container">
+          <div className="mefane-section-header">
+            <div className="mefane-eyebrow">Work Experience</div>
+            <h2 className="mefane-section-title">
+              Companies I Have <span className="mefane-gradient-text">Worked With</span>
+            </h2>
+            <p className="mefane-section-description">
+              Trusted experience gained alongside respected businesses in Lesotho. Contact numbers are provided so you can verify my work.
+            </p>
+          </div>
+
+          <div className="mefane-company-grid">
+            {companies.map((company, index) => (
+              <article key={company.name} className="mefane-company-card">
+                <div className="mefane-company-number">{String(index + 1).padStart(2, "0")}</div>
+
+                <div className="mefane-company-top">
+                  <div className="mefane-company-icon">{company.icon}</div>
+                  <div className="mefane-company-heading">
+                    <span className="mefane-company-tag">{company.tag}</span>
+                    <h3>{company.name}</h3>
+                    {company.location && (
+                      <div className="mefane-company-location">
+                        <PinOutline style={{ fontSize: "15px" }} />
+                        {company.location}
+                      </div>
+                    )}
+                  </div>
+                </div>
+
+                <p className="mefane-company-description">{company.description}</p>
+
+                <div className="mefane-company-chips">
+                  {company.highlights.map((item) => (
+                    <span key={item} className="mefane-company-chip">
+                      <CheckCircle2 style={{ fontSize: "13px" }} />
+                      {item}
+                    </span>
+                  ))}
+                </div>
+
+                {company.phone && company.phoneHref ? (
+                  <a href={company.phoneHref} className="mefane-company-call">
+                    <span className="mefane-company-call-icon"><Phone style={{ fontSize: "18px" }} /></span>
+                    <span className="mefane-company-call-text">
+                      <small>{company.phoneNote ? `Contact (${company.phoneNote})` : "Contact"}</small>
+                      <strong>{company.phone}</strong>
+                    </span>
+                    <ChevronRight fontSize="small" />
+                  </a>
+                ) : (
+                  <div className="mefane-company-call mefane-company-call-empty">
+                    <span className="mefane-company-call-icon"><Handyman style={{ fontSize: "18px" }} /></span>
+                    <span className="mefane-company-call-text">
+                      <small>Field</small>
+                      <strong>Electrical &amp; Plumbing</strong>
+                    </span>
+                  </div>
+                )}
+              </article>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      {/* ========================================
           PORTFOLIO SECTION (Pictures 1 to 37)
       ========================================= */}
       <section id="portfolio" className="mefane-section">
@@ -599,9 +732,11 @@ export default function Home() {
       <footer className="mefane-footer">
         <div className="mefane-container mefane-footer-inner">
           <div className="mefane-logo">
-            <div className="mefane-logo-icon" style={{ width: "36px", height: "36px" }}>
-              <Zap style={{ fontSize: "20px" }} />
-            </div>
+            <img
+              src={require("../assets/MELogo.png")}
+              alt="Mefane Engineering logo"
+              className="mefane-logo-img mefane-logo-img-footer"
+            />
             <div>
               <div className="mefane-logo-name" style={{ fontSize: "16px" }}>MEFANE ENGINEERING</div>
               <div className="mefane-logo-subtitle">We build. We fix. We care.</div>

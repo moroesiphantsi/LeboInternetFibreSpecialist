@@ -1866,3 +1866,463 @@ body {
     transform: none;
   }
 }
+
+/* =========================================================
+   EXPERIENCE — COMPANIES I HAVE WORKED WITH
+   ========================================================= */
+
+.mefane-experience {
+  background:
+    radial-gradient(circle at 85% 10%, rgba(245, 158, 11, 0.07), transparent 35%),
+    linear-gradient(180deg, rgba(255, 255, 255, 0.015), rgba(255, 255, 255, 0.03));
+  border-top: 1px solid var(--mefane-border);
+}
+
+.mefane-company-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 20px;
+}
+
+.mefane-company-card {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  gap: 18px;
+  padding: 30px;
+  overflow: hidden;
+  border: 1px solid var(--mefane-border);
+  border-radius: var(--mefane-radius-lg);
+  background: linear-gradient(145deg, rgba(255, 255, 255, 0.05), rgba(255, 255, 255, 0.018));
+  transition: transform var(--mefane-transition), border-color var(--mefane-transition), box-shadow var(--mefane-transition);
+}
+
+.mefane-company-card::before {
+  content: "";
+  position: absolute;
+  left: 0;
+  top: 0;
+  bottom: 0;
+  width: 4px;
+  background: linear-gradient(180deg, #f59e0b, #fde68a);
+  opacity: 0.85;
+}
+
+.mefane-company-card::after {
+  content: "";
+  position: absolute;
+  width: 170px;
+  height: 170px;
+  top: -90px;
+  right: -90px;
+  border-radius: 50%;
+  background: rgba(245, 158, 11, 0.1);
+  filter: blur(24px);
+  pointer-events: none;
+}
+
+.mefane-company-card:hover {
+  transform: translateY(-6px);
+  border-color: rgba(245, 158, 11, 0.38);
+  box-shadow: var(--mefane-shadow);
+}
+
+.mefane-company-number {
+  position: absolute;
+  top: 18px;
+  right: 22px;
+  z-index: 1;
+  color: rgba(255, 255, 255, 0.07);
+  font-size: 52px;
+  font-weight: 900;
+  line-height: 1;
+  letter-spacing: -0.04em;
+  pointer-events: none;
+}
+
+.mefane-company-top {
+  position: relative;
+  z-index: 1;
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  padding-right: 54px;
+}
+
+.mefane-company-icon {
+  flex: 0 0 auto;
+  width: 60px;
+  height: 60px;
+  display: grid;
+  place-items: center;
+  border-radius: 18px;
+  border: 1px solid rgba(245, 158, 11, 0.2);
+  background: var(--mefane-gold-soft);
+  color: var(--mefane-gold-light);
+  transition: var(--mefane-transition);
+}
+
+.mefane-company-card:hover .mefane-company-icon {
+  transform: scale(1.07) rotate(-3deg);
+}
+
+.mefane-company-heading {
+  min-width: 0;
+}
+
+.mefane-company-tag {
+  display: inline-block;
+  margin-bottom: 6px;
+  padding: 4px 10px;
+  border-radius: 999px;
+  background: rgba(245, 158, 11, 0.1);
+  border: 1px solid rgba(245, 158, 11, 0.22);
+  color: var(--mefane-gold-light);
+  font-size: 9px;
+  font-weight: 800;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+}
+
+.mefane-company-heading h3 {
+  margin: 0;
+  color: white;
+  font-size: 21px;
+  line-height: 1.2;
+  letter-spacing: -0.015em;
+  overflow-wrap: anywhere;
+}
+
+.mefane-company-location {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  margin-top: 6px;
+  color: var(--mefane-text-muted);
+  font-size: 12px;
+  font-weight: 600;
+}
+
+.mefane-company-description {
+  position: relative;
+  z-index: 1;
+  margin: 0;
+  color: var(--mefane-text-muted);
+  font-size: 14px;
+  line-height: 1.75;
+}
+
+.mefane-company-chips {
+  position: relative;
+  z-index: 1;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.mefane-company-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 7px 12px;
+  border: 1px solid var(--mefane-border);
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.04);
+  color: var(--mefane-text-soft);
+  font-size: 11px;
+  font-weight: 700;
+}
+
+.mefane-company-chip svg {
+  color: var(--mefane-gold-light);
+}
+
+.mefane-company-call {
+  position: relative;
+  z-index: 1;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-top: auto;
+  padding: 13px 16px;
+  min-height: 56px;
+  border: 1px solid rgba(245, 158, 11, 0.22);
+  border-radius: var(--mefane-radius-md);
+  background: rgba(245, 158, 11, 0.07);
+  color: white;
+  text-decoration: none;
+  transition: background var(--mefane-transition), border-color var(--mefane-transition), transform var(--mefane-transition);
+}
+
+a.mefane-company-call:hover {
+  background: rgba(245, 158, 11, 0.15);
+  border-color: rgba(245, 158, 11, 0.5);
+}
+
+a.mefane-company-call:active {
+  transform: scale(0.985);
+}
+
+.mefane-company-call-empty {
+  cursor: default;
+}
+
+.mefane-company-call-icon {
+  flex: 0 0 auto;
+  width: 36px;
+  height: 36px;
+  display: grid;
+  place-items: center;
+  border-radius: 11px;
+  background: linear-gradient(135deg, #f59e0b, #fbbf24);
+  color: #090c11;
+}
+
+.mefane-company-call-text {
+  flex: 1 1 auto;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.mefane-company-call-text small {
+  color: var(--mefane-text-muted);
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.mefane-company-call-text strong {
+  font-size: 16px;
+  font-weight: 800;
+  letter-spacing: 0.01em;
+}
+
+.mefane-company-call > svg {
+  color: var(--mefane-gold-light);
+}
+
+/* =========================================================
+   PHONE-FRIENDLY ENHANCEMENTS
+   ========================================================= */
+
+html {
+  scroll-behavior: smooth;
+  -webkit-text-size-adjust: 100%;
+}
+
+.mefane-page {
+  -webkit-tap-highlight-color: rgba(245, 158, 11, 0.18);
+}
+
+.mefane-page img,
+.mefane-page video {
+  max-width: 100%;
+}
+
+/* Sticky header must not cover the top of a section after a menu tap */
+#home,
+#services,
+#about,
+#experience,
+#portfolio,
+#contact {
+  scroll-margin-top: 78px;
+}
+
+/* Keep the extra menu tab from crowding the bar on small tablets */
+@media (max-width: 1000px) and (min-width: 769px) {
+  .mefane-nav-links {
+    gap: 14px;
+  }
+  .mefane-nav-links a {
+    font-size: 12px;
+  }
+  .mefane-navbar .mefane-btn {
+    padding: 0 14px;
+    font-size: 11px;
+  }
+}
+
+@media (max-width: 900px) {
+  .mefane-company-grid {
+    gap: 16px;
+  }
+  .mefane-company-card {
+    padding: 24px;
+  }
+}
+
+@media (max-width: 768px) {
+  #home,
+  #services,
+  #about,
+  #experience,
+  #portfolio,
+  #contact {
+    scroll-margin-top: 70px;
+  }
+
+  /* Menu: scrollable on short screens, comfortable thumb targets */
+  .mefane-mobile-menu {
+    max-height: calc(100vh - 70px);
+    max-height: calc(100dvh - 70px);
+    overflow-y: auto;
+    overscroll-behavior: contain;
+    padding-bottom: max(18px, env(safe-area-inset-bottom));
+  }
+
+  .mefane-mobile-menu a {
+    min-height: 48px;
+    display: flex;
+    align-items: center;
+  }
+
+  .mefane-mobile-menu a.mefane-btn {
+    justify-content: center;
+    border-bottom: 0;
+  }
+
+  .mefane-mobile-button {
+    width: 46px;
+    height: 46px;
+  }
+
+  .mefane-company-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+@media (max-width: 600px) {
+  #home,
+  #services,
+  #about,
+  #experience,
+  #portfolio,
+  #contact {
+    scroll-margin-top: 64px;
+  }
+
+  .mefane-mobile-menu {
+    max-height: calc(100vh - 64px);
+    max-height: calc(100dvh - 64px);
+  }
+
+  .mefane-company-grid {
+    gap: 12px;
+  }
+
+  .mefane-company-card {
+    gap: 15px;
+    padding: 20px 18px 18px 22px;
+    border-radius: 20px;
+  }
+
+  .mefane-company-number {
+    top: 12px;
+    right: 14px;
+    font-size: 40px;
+  }
+
+  .mefane-company-top {
+    gap: 13px;
+    padding-right: 40px;
+  }
+
+  .mefane-company-icon {
+    width: 52px;
+    height: 52px;
+    border-radius: 15px;
+  }
+
+  .mefane-company-heading h3 {
+    font-size: 18px;
+  }
+
+  .mefane-company-description {
+    font-size: 13px;
+    line-height: 1.7;
+  }
+
+  .mefane-company-chip {
+    padding: 6px 10px;
+    font-size: 10px;
+  }
+
+  .mefane-company-call {
+    min-height: 60px;
+    padding: 12px 14px;
+  }
+
+  .mefane-company-call-text strong {
+    font-size: 17px;
+  }
+
+  /* Bigger, easier-to-tap controls across the site */
+  .mefane-btn {
+    min-height: 48px;
+  }
+
+  .mefane-service-link {
+    min-height: 44px;
+  }
+
+  .mefane-lightbox-close {
+    width: 44px;
+    height: 44px;
+  }
+
+  .mefane-footer-inner {
+    text-align: center;
+    align-items: center;
+  }
+
+  .mefane-footer-inner .mefane-logo {
+    justify-content: center;
+  }
+}
+
+@media (max-width: 380px) {
+  .mefane-company-card {
+    padding: 18px 14px 16px 18px;
+  }
+
+  .mefane-company-top {
+    flex-direction: column;
+    align-items: flex-start;
+    padding-right: 36px;
+  }
+
+  .mefane-company-heading h3 {
+    font-size: 17px;
+  }
+}
+
+/* =========================================================
+   LOGO IMAGE (MELogo.png)
+   ========================================================= */
+
+.mefane-logo-img {
+  display: block;
+  flex: 0 0 auto;
+  width: auto;
+  height: 48px;
+  max-width: 120px;
+  object-fit: contain;
+}
+
+.mefane-logo-img-footer {
+  height: 40px;
+}
+
+@media (max-width: 600px) {
+  .mefane-logo-img {
+    height: 40px;
+    max-width: 90px;
+  }
+  .mefane-logo-img-footer {
+    height: 36px;
+  }
+}
