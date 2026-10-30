@@ -55,16 +55,6 @@ interface CompanyItem {
 }
 
 export default function Home() {
-  // Ensure the browser uses the real device width on phones.
-  useEffect(() => {
-    let viewport = document.querySelector<HTMLMetaElement>('meta[name="viewport"]');
-    if (!viewport) {
-      viewport = document.createElement("meta");
-      viewport.name = "viewport";
-      document.head.appendChild(viewport);
-    }
-    viewport.content = "width=device-width, initial-scale=1, viewport-fit=cover";
-  }, []);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [activeCategory, setActiveCategory] = useState("All");
   const [selectedImage, setSelectedImage] = useState<PortfolioItem | null>(null);
@@ -435,7 +425,9 @@ export default function Home() {
             type="button"
             onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
             className="mefane-mobile-button"
-            aria-label="Toggle Menu"
+            aria-label={mobileMenuOpen ? "Close navigation menu" : "Open navigation menu"}
+            aria-expanded={mobileMenuOpen}
+            aria-controls="mefane-mobile-navigation"
           >
             {mobileMenuOpen ? <X /> : <Menu />}
           </button>
@@ -443,7 +435,7 @@ export default function Home() {
       </header>
 
       {mobileMenuOpen && (
-        <div className="mefane-mobile-menu">
+        <nav id="mefane-mobile-navigation" className="mefane-mobile-menu" aria-label="Mobile navigation">
           <a href="#home" onClick={() => setMobileMenuOpen(false)}>Home</a>
           <a href="#services" onClick={() => setMobileMenuOpen(false)}>Services</a>
           <a href="#about" onClick={() => setMobileMenuOpen(false)}>About Us</a>
@@ -460,7 +452,7 @@ export default function Home() {
               Request Engineering Services
             </a>
           </div>
-        </div>
+        </nav>
       )}
 
       {/* ========================================
