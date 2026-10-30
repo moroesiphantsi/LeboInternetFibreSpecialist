@@ -407,11 +407,6 @@ export default function Home() {
       <header className={`mefane-navbar ${scrolled ? "scrolled" : ""}`}>
         <div className="mefane-container mefane-navbar-inner">
           <a href="#home" className="mefane-logo">
-            <img
-              src={require("../assets/MELogo.png")}
-              alt="Mefane Engineering logo"
-              className="mefane-logo-img"
-            />
             <div>
               <div className="mefane-logo-name">MEFANE</div>
               <div className="mefane-logo-subtitle">Engineering</div>
@@ -896,11 +891,6 @@ export default function Home() {
       <footer className="mefane-footer">
         <div className="mefane-container mefane-footer-inner">
           <div className="mefane-logo">
-            <img
-              src={require("../assets/MELogo.png")}
-              alt="Mefane Engineering logo"
-              className="mefane-logo-img mefane-logo-img-footer"
-            />
             <div>
               <div className="mefane-logo-name" style={{ fontSize: "16px" }}>MEFANE ENGINEERING</div>
               <div className="mefane-logo-subtitle">We build. We fix. We care.</div>

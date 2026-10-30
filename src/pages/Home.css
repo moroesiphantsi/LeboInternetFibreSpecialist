@@ -2929,3 +2929,190 @@ html, body {
     padding: 16px 12px;
   }
 }
+
+
+/* Keep the complete brand name visible beside the logo on phones. */
+@media (max-width: 768px) {
+  .mefane-navbar-inner {
+    min-width: 0;
+    gap: 8px;
+  }
+
+  .mefane-navbar .mefane-logo {
+    flex: 0 1 auto;
+    min-width: 0;
+    max-width: calc(100% - 52px);
+    gap: 8px;
+    overflow: visible;
+  }
+
+  .mefane-navbar .mefane-logo-img {
+    flex: 0 0 42px;
+    width: 42px;
+    min-width: 42px;
+    max-width: 42px;
+    height: 38px;
+  }
+
+  .mefane-navbar .mefane-logo > div {
+    flex: 0 1 auto;
+    min-width: 0;
+    width: auto;
+    overflow: visible;
+  }
+
+  .mefane-navbar .mefane-logo-name {
+    display: block;
+    white-space: nowrap;
+    font-size: clamp(13px, 4.1vw, 17px);
+    letter-spacing: 0.035em;
+    line-height: 1.05;
+  }
+
+  .mefane-navbar .mefane-logo-subtitle {
+    display: block;
+    white-space: nowrap;
+    font-size: 8px;
+    letter-spacing: 0.22em;
+    line-height: 1.2;
+  }
+
+  .mefane-navbar .mefane-mobile-button {
+    flex: 0 0 44px;
+    margin-left: auto;
+  }
+}
+
+@media (max-width: 360px) {
+  .mefane-navbar .mefane-logo-img {
+    flex-basis: 36px;
+    width: 36px;
+    min-width: 36px;
+    max-width: 36px;
+  }
+
+  .mefane-navbar .mefane-logo-name {
+    font-size: 13px;
+  }
+
+  .mefane-navbar .mefane-logo-subtitle {
+    font-size: 7px;
+    letter-spacing: 0.19em;
+  }
+}
+
+
+/* FINAL PHONE FIX: keep the full brand name without widening the page. */
+@media (max-width: 768px) {
+  html, body, #root {
+    width: 100%;
+    max-width: 100%;
+    min-width: 0;
+    margin: 0;
+  }
+
+  .mefane-page {
+    width: 100%;
+    max-width: 100%;
+    min-width: 0;
+    overflow-x: clip;
+  }
+
+  .mefane-container {
+    width: 100%;
+    max-width: 100%;
+    min-width: 0;
+    box-sizing: border-box;
+  }
+
+  .mefane-navbar {
+    width: 100%;
+    max-width: 100%;
+  }
+
+  .mefane-navbar-inner {
+    width: 100%;
+    max-width: 100%;
+    min-width: 0;
+    box-sizing: border-box;
+    padding-left: clamp(10px, 3vw, 18px);
+    padding-right: clamp(10px, 3vw, 18px);
+    gap: 6px;
+  }
+
+  .mefane-navbar .mefane-logo {
+    flex: 1 1 0;
+    min-width: 0;
+    max-width: calc(100% - 46px);
+    gap: 6px;
+  }
+
+  .mefane-navbar .mefane-logo-img {
+    flex: 0 0 clamp(32px, 10vw, 40px);
+    width: clamp(32px, 10vw, 40px);
+    min-width: clamp(32px, 10vw, 40px);
+    max-width: clamp(32px, 10vw, 40px);
+    height: auto;
+    object-fit: contain;
+  }
+
+  .mefane-navbar .mefane-logo-name {
+    display: block;
+    white-space: nowrap;
+    font-size: clamp(11px, 3.8vw, 16px);
+    letter-spacing: 0.02em;
+    line-height: 1.05;
+  }
+
+  .mefane-navbar .mefane-logo-subtitle {
+    display: block;
+    white-space: nowrap;
+    font-size: clamp(6.5px, 2vw, 8px);
+    letter-spacing: 0.14em;
+    line-height: 1.15;
+  }
+
+  .mefane-navbar .mefane-mobile-button {
+    flex: 0 0 40px;
+    width: 40px;
+    min-width: 40px;
+    margin-left: auto;
+  }
+}
+
+@media (max-width: 360px) {
+  .mefane-navbar .mefane-logo-name {
+    font-size: 11px;
+  }
+  .mefane-navbar .mefane-logo-subtitle {
+    font-size: 6px;
+    letter-spacing: 0.11em;
+  }
+}
+
+
+/* LOGO REMOVED: keep the MEFANE ENGINEERING wordmark clean and responsive. */
+.mefane-logo-img,
+.mefane-logo-icon { display: none !important; }
+.mefane-navbar .mefane-logo {
+  flex: 1 1 auto;
+  min-width: 0;
+  max-width: calc(100% - 48px);
+  gap: 0;
+}
+.mefane-navbar .mefane-logo > div { min-width: 0; }
+.mefane-navbar .mefane-logo-name {
+  white-space: nowrap;
+  font-size: clamp(12px, 3.8vw, 18px);
+  letter-spacing: 0.025em;
+}
+.mefane-navbar .mefane-logo-subtitle {
+  white-space: nowrap;
+  font-size: clamp(7px, 1.9vw, 9px);
+  letter-spacing: 0.18em;
+}
+.mefane-footer-inner .mefane-logo { gap: 0; }
+@media (max-width: 360px) {
+  .mefane-navbar .mefane-logo-name { font-size: 11px; }
+  .mefane-navbar .mefane-logo-subtitle { font-size: 7px; letter-spacing: 0.12em; }
+}
