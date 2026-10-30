@@ -2646,27 +2646,569 @@ html {
 
 
 /* =========================================================
-   FINAL PHONE VIEWPORT LAYOUT — CONTENT MUST REFLOW, NOT CLIP
+   FINAL RESPONSIVE OVERRIDES — MOBILE & TABLET
+   These rules intentionally come last to override legacy breakpoints.
+   ========================================================= */
+
+html {
+  scroll-padding-top: 76px;
+}
+
+.mefane-page {
+  width: 100%;
+  max-width: 100%;
+  overflow-x: clip;
+}
+
+.mefane-container {
+  width: min(1180px, calc(100% - 40px));
+}
+
+.mefane-page img,
+.mefane-page video {
+  display: block;
+  max-width: 100%;
+}
+
+.mefane-hero-grid > *,
+.mefane-about-grid > *,
+.mefane-contact-grid > *,
+.mefane-services-grid > *,
+.mefane-trust-grid > *,
+.mefane-company-grid > *,
+.mefane-portfolio-grid > *,
+.mefane-navbar-inner > *,
+.mefane-topbar-inner > * {
+  min-width: 0;
+}
+
+.mefane-page h1,
+.mefane-page h2,
+.mefane-page h3,
+.mefane-page p {
+  overflow-wrap: anywhere;
+}
+
+.mefane-page button,
+.mefane-page a,
+.mefane-page input,
+.mefane-page select,
+.mefane-page textarea {
+  -webkit-tap-highlight-color: rgba(245, 158, 11, 0.18);
+}
+
+@media (max-width: 900px) {
+  .mefane-container {
+    width: min(100% - 36px, 760px);
+  }
+
+  .mefane-navbar {
+    height: 70px;
+  }
+
+  .mefane-nav-links,
+  .mefane-navbar .mefane-btn {
+    display: none;
+  }
+
+  .mefane-mobile-button {
+    display: grid;
+    flex: 0 0 46px;
+  }
+
+  .mefane-hero-grid,
+  .mefane-about-grid,
+  .mefane-contact-grid {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .mefane-hero-grid {
+    gap: 38px;
+  }
+
+  .mefane-hero-content {
+    text-align: center;
+  }
+
+  .mefane-hero-content .mefane-eyebrow,
+  .mefane-hero-actions,
+  .mefane-hero-meta {
+    justify-content: center;
+  }
+
+  .mefane-hero-description {
+    margin-inline: auto;
+  }
+
+  .mefane-video-wrapper {
+    width: 100%;
+    max-width: 680px;
+    margin-inline: auto;
+  }
+
+  .mefane-trust-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .mefane-services-grid,
+  .mefane-company-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .mefane-portfolio-grid {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+
+  .mefane-contact-grid {
+    gap: 32px;
+  }
+}
+
+@media (max-width: 600px) {
+  html {
+    scroll-padding-top: 66px;
+  }
+
+  .mefane-container {
+    width: calc(100% - 32px);
+  }
+
+  .mefane-topbar {
+    min-height: 0;
+    padding-block: 7px;
+    font-size: 10px;
+  }
+
+  .mefane-topbar-inner {
+    gap: 5px;
+    text-align: center;
+  }
+
+  .mefane-topbar-location,
+  .mefane-topbar-contact {
+    justify-content: center;
+    flex-wrap: wrap;
+    gap: 7px;
+  }
+
+  .mefane-navbar {
+    height: 64px;
+  }
+
+  .mefane-navbar-inner {
+    gap: 10px;
+  }
+
+  .mefane-logo {
+    min-width: 0;
+    gap: 8px;
+  }
+
+  .mefane-logo-img {
+    height: 38px;
+    max-width: 78px;
+  }
+
+  .mefane-logo-name {
+    font-size: 15px;
+  }
+
+  .mefane-logo-subtitle {
+    font-size: 7px;
+    letter-spacing: 0.2em;
+  }
+
+  .mefane-mobile-button {
+    width: 44px;
+    height: 44px;
+    flex-basis: 44px;
+  }
+
+  /* The menu is attached to the viewport while the sticky header remains visible. */
+  .mefane-mobile-menu {
+    position: fixed;
+    top: 64px;
+    left: 0;
+    right: 0;
+    z-index: 999;
+    display: block;
+    width: 100%;
+    max-height: calc(100vh - 64px);
+    max-height: calc(100dvh - 64px);
+    overflow-y: auto;
+    overscroll-behavior: contain;
+    padding: 10px 20px max(20px, env(safe-area-inset-bottom));
+    background: rgba(7, 11, 17, 0.98);
+    border-bottom: 1px solid var(--mefane-border);
+    box-shadow: 0 18px 40px rgba(0, 0, 0, 0.4);
+  }
+
+  .mefane-mobile-menu a {
+    display: flex;
+    align-items: center;
+    min-height: 48px;
+    padding: 12px 4px;
+    font-size: 14px;
+  }
+
+  .mefane-mobile-menu a.mefane-btn {
+    justify-content: center;
+    margin-top: 12px;
+    padding-inline: 14px;
+  }
+
+  .mefane-hero {
+    padding: 48px 0 54px;
+  }
+
+  .mefane-hero-grid {
+    gap: 28px;
+  }
+
+  .mefane-eyebrow {
+    max-width: 100%;
+    justify-content: center;
+    padding: 7px 10px;
+    font-size: 9px;
+    line-height: 1.5;
+    text-align: center;
+    white-space: normal;
+  }
+
+  .mefane-hero h1 {
+    margin: 18px 0;
+    font-size: clamp(32px, 9.5vw, 44px);
+    line-height: 1.06;
+    letter-spacing: -0.035em;
+  }
+
+  .mefane-hero-description {
+    font-size: 14px;
+    line-height: 1.7;
+  }
+
+  .mefane-hero-actions {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr);
+    gap: 10px;
+    margin-top: 24px;
+  }
+
+  .mefane-hero-actions .mefane-btn,
+  .mefane-lightbox-info .mefane-btn {
+    width: 100%;
+  }
+
+  .mefane-btn {
+    min-height: 48px;
+    padding-inline: 16px;
+  }
+
+  .mefane-hero-meta {
+    flex-wrap: wrap;
+    gap: 14px;
+    margin-top: 24px;
+    padding-top: 18px;
+  }
+
+  .mefane-stat strong {
+    font-size: 25px;
+  }
+
+  .mefane-video-card {
+    border-radius: 18px;
+  }
+
+  .mefane-video {
+    aspect-ratio: 4 / 3;
+  }
+
+  .mefane-video-overlay {
+    padding: 48px 13px 13px;
+  }
+
+  .mefane-video-overlay h3 {
+    font-size: 15px;
+  }
+
+  .mefane-video-overlay p {
+    font-size: 10px;
+  }
+
+  .mefane-video-tags {
+    gap: 5px;
+  }
+
+  .mefane-video-tags span {
+    padding: 4px 7px;
+    font-size: 9px;
+  }
+
+  .mefane-video-controls {
+    top: 8px;
+    right: 8px;
+    gap: 5px;
+  }
+
+  .mefane-video-control {
+    width: 38px;
+    height: 38px;
+  }
+
+  .mefane-trust {
+    padding: 16px 0;
+  }
+
+  .mefane-trust-grid,
+  .mefane-services-grid,
+  .mefane-company-grid,
+  .mefane-contact-grid,
+  .mefane-form-grid {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .mefane-trust-grid {
+    gap: 9px;
+  }
+
+  .mefane-trust-card {
+    padding: 13px;
+  }
+
+  .mefane-section {
+    padding: 54px 0;
+  }
+
+  .mefane-section-header {
+    margin-bottom: 30px;
+  }
+
+  .mefane-section-title {
+    font-size: clamp(27px, 8vw, 36px);
+    line-height: 1.08;
+  }
+
+  .mefane-section-description {
+    font-size: 13px;
+    line-height: 1.7;
+  }
+
+  .mefane-service-card {
+    min-height: 0;
+    padding: 21px;
+  }
+
+  .mefane-about-grid {
+    gap: 0;
+  }
+
+  .mefane-about-content {
+    text-align: center;
+  }
+
+  .mefane-about-content h2 {
+    font-size: clamp(30px, 8.5vw, 40px);
+    line-height: 1.08;
+  }
+
+  .mefane-about-stats {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 9px;
+  }
+
+  .mefane-about-stat {
+    padding: 14px 9px;
+  }
+
+  .mefane-about-stat strong {
+    font-size: 25px;
+  }
+
+  .mefane-about-location {
+    justify-content: center;
+    flex-wrap: wrap;
+    text-align: center;
+  }
+
+  .mefane-category-list {
+    justify-content: flex-start;
+    flex-wrap: nowrap;
+    overflow-x: auto;
+    margin: 0 -16px 22px;
+    padding: 2px 16px 8px;
+    scrollbar-width: none;
+    -webkit-overflow-scrolling: touch;
+  }
+
+  .mefane-category-list::-webkit-scrollbar {
+    display: none;
+  }
+
+  .mefane-category {
+    flex: 0 0 auto;
+    min-height: 42px;
+    white-space: nowrap;
+  }
+
+  .mefane-portfolio-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 9px;
+  }
+
+  .mefane-project-info {
+    padding: 10px;
+  }
+
+  .mefane-project-title {
+    display: -webkit-box;
+    -webkit-box-orient: vertical;
+    -webkit-line-clamp: 2;
+    overflow: hidden;
+    white-space: normal;
+    font-size: 11px;
+    line-height: 1.4;
+  }
+
+  .mefane-project-expand {
+    width: 32px;
+    height: 32px;
+    opacity: 1;
+    transform: none;
+  }
+
+  .mefane-lightbox {
+    padding: 10px;
+  }
+
+  .mefane-lightbox-content {
+    width: 100%;
+    max-height: calc(100dvh - 20px);
+    overflow-y: auto;
+    border-radius: 17px;
+  }
+
+  .mefane-lightbox-image {
+    width: 100%;
+    max-height: 58dvh;
+    object-fit: contain;
+  }
+
+  .mefane-lightbox-info {
+    flex-direction: column;
+    align-items: stretch;
+    gap: 14px;
+    padding: 15px;
+  }
+
+  .mefane-contact-grid {
+    gap: 26px;
+  }
+
+  .mefane-contact-title {
+    font-size: clamp(29px, 8.5vw, 38px);
+    line-height: 1.08;
+  }
+
+  .mefane-contact-description {
+    font-size: 13px;
+    line-height: 1.7;
+  }
+
+  .mefane-contact-card {
+    padding: 13px;
+  }
+
+  .mefane-form {
+    padding: 18px;
+  }
+
+  .mefane-field input,
+  .mefane-field select,
+  .mefane-field textarea {
+    width: 100%;
+    min-height: 48px;
+    font-size: 16px;
+  }
+
+  .mefane-field textarea {
+    min-height: 120px;
+  }
+
+  .mefane-footer-inner {
+    align-items: center;
+    text-align: center;
+    gap: 16px;
+  }
+
+  .mefane-footer-inner .mefane-logo {
+    justify-content: center;
+  }
+}
+
+@media (max-width: 380px) {
+  .mefane-container {
+    width: calc(100% - 26px);
+  }
+
+  .mefane-logo-img {
+    height: 34px;
+    max-width: 66px;
+  }
+
+  .mefane-logo-name {
+    font-size: 13px;
+  }
+
+  .mefane-hero h1 {
+    font-size: clamp(29px, 9vw, 34px);
+  }
+
+  .mefane-portfolio-grid {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .mefane-about-stats {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .mefane-video-overlay p {
+    display: none;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  html {
+    scroll-behavior: auto;
+  }
+
+  .mefane-page *,
+  .mefane-page *::before,
+  .mefane-page *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+}
+
+/* =========================================================
+   PHONE WIDTH SAFETY PATCH
+   Prevents content from being positioned beyond the right edge
+   of narrow phone screens. Keep this block at the very end.
    ========================================================= */
 html,
 body,
 #root {
   width: 100%;
   max-width: 100%;
-  min-width: 0 !important;
-  margin: 0;
-}
-
-html, body {
-  overflow-x: hidden !important;
+  min-width: 0;
+  margin-inline: 0;
 }
 
 .mefane-page {
-  display: block;
-  width: 100% !important;
-  max-width: 100% !important;
-  min-width: 0 !important;
-  overflow-x: hidden !important;
+  width: 100%;
+  max-width: 100%;
+  min-width: 0;
+  overflow-x: clip;
 }
 
 .mefane-page *,
@@ -2674,14 +3216,12 @@ html, body {
 .mefane-page *::after {
   box-sizing: border-box;
   min-width: 0;
-  max-width: 100%;
 }
 
 .mefane-container {
-  width: calc(100% - 32px) !important;
+  width: calc(100% - 32px);
   max-width: 1180px;
-  margin-left: auto;
-  margin-right: auto;
+  margin-inline: auto;
 }
 
 .mefane-page img,
@@ -2691,94 +3231,8 @@ html, body {
   max-width: 100%;
 }
 
-.mefane-page img,
-.mefane-page video {
-  height: auto;
-}
-
-.mefane-page h1,
-.mefane-page h2,
-.mefane-page h3,
-.mefane-page h4,
-.mefane-page p,
-.mefane-page a,
-.mefane-page span,
-.mefane-page strong,
-.mefane-page label {
-  overflow-wrap: anywhere;
-  word-break: normal;
-}
-
-.mefane-page input,
-.mefane-page select,
-.mefane-page textarea,
-.mefane-page button {
-  max-width: 100%;
-}
-
-@media (max-width: 768px) {
-  .mefane-container {
-    width: calc(100% - 28px) !important;
-  }
-
-  .mefane-topbar-inner,
-  .mefane-navbar-inner,
-  .mefane-footer-inner {
-    width: calc(100% - 28px) !important;
-    max-width: 100% !important;
-  }
-
-  .mefane-topbar-inner {
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-    gap: 7px;
-  }
-
-  .mefane-topbar-location,
-  .mefane-topbar-contact {
-    max-width: 100%;
-    flex-wrap: wrap;
-    justify-content: center;
-    text-align: center;
-    gap: 7px;
-  }
-
-  .mefane-navbar-inner {
-    display: flex;
-    justify-content: space-between;
-    gap: 10px;
-  }
-
-  .mefane-logo {
-    flex: 1 1 auto;
-    min-width: 0;
-    max-width: calc(100% - 58px);
-  }
-
-  .mefane-logo-img {
-    width: auto;
-    max-width: 64px;
-    height: 38px;
-    object-fit: contain;
-  }
-
-  .mefane-logo-name {
-    font-size: clamp(14px, 4vw, 17px);
-  }
-
-  .mefane-mobile-button {
-    flex: 0 0 44px;
-    width: 44px;
-    height: 44px;
-  }
-
-  .mefane-hero,
-  .mefane-section {
-    padding-top: 54px;
-    padding-bottom: 54px;
-  }
-
+@media (max-width: 600px) {
+  /* Stack content instead of allowing a second column off-screen. */
   .mefane-hero-grid,
   .mefane-about-grid,
   .mefane-contact-grid,
@@ -2788,144 +3242,76 @@ html, body {
   .mefane-form-grid,
   .mefane-portfolio-grid {
     display: grid;
-    grid-template-columns: minmax(0, 1fr) !important;
+    grid-template-columns: minmax(0, 1fr);
     width: 100%;
     max-width: 100%;
-    gap: 18px;
   }
 
-  .mefane-hero-content,
-  .mefane-video-wrapper,
-  .mefane-about-content,
-  .mefane-contact-grid > *,
-  .mefane-form,
-  .mefane-company-card,
-  .mefane-service-card,
-  .mefane-trust-card,
-  .mefane-project {
+  .mefane-section,
+  .mefane-hero,
+  .mefane-trust,
+  .mefane-footer {
     width: 100%;
     max-width: 100%;
+  }
+
+  .mefane-topbar-inner,
+  .mefane-topbar-location,
+  .mefane-topbar-contact,
+  .mefane-navbar-inner,
+  .mefane-footer-inner,
+  .mefane-hero-actions,
+  .mefane-hero-meta,
+  .mefane-about-location {
     min-width: 0;
-  }
-
-  .mefane-page .mefane-hero h1 {
-    font-size: clamp(30px, 9vw, 46px);
-    line-height: 1.05;
-    letter-spacing: -0.035em;
-  }
-
-  .mefane-page .mefane-section-title,
-  .mefane-page .mefane-contact-title,
-  .mefane-page .mefane-about-content h2 {
-    font-size: clamp(26px, 7.5vw, 38px);
-    line-height: 1.12;
-  }
-
-  .mefane-hero-actions {
-    display: flex;
-    flex-direction: column;
-    align-items: stretch;
-    width: 100%;
-  }
-
-  .mefane-hero-actions .mefane-btn,
-  .mefane-form .mefane-btn {
-    width: 100%;
-  }
-
-  .mefane-hero-meta {
+    max-width: 100%;
     flex-wrap: wrap;
-    justify-content: center;
-  }
-
-  .mefane-video-wrapper {
-    margin-left: auto;
-    margin-right: auto;
-  }
-
-  .mefane-video-card {
-    width: 100%;
-    max-width: 100%;
-  }
-
-  .mefane-video-overlay {
-    padding: 44px 12px 12px;
-  }
-
-  .mefane-category-list {
-    display: flex;
-    flex-wrap: wrap !important;
-    justify-content: center;
-    gap: 8px;
-    width: 100%;
-    max-width: 100%;
-    overflow: visible !important;
-  }
-
-  .mefane-category {
-    flex: 0 1 auto;
-    max-width: 100%;
-    white-space: normal;
-  }
-
-  .mefane-form {
-    padding: 18px;
-  }
-
-  .mefane-contact-card,
-  .mefane-company-top,
-  .mefane-company-call {
-    min-width: 0;
-    max-width: 100%;
-  }
-
-  .mefane-contact-card,
-  .mefane-company-call {
-    overflow-wrap: anywhere;
   }
 
   .mefane-mobile-menu {
-    left: 14px;
-    right: 14px;
+    left: 0;
+    right: 0;
     width: auto;
-    max-width: none;
+    max-width: 100%;
   }
 
-  .mefane-lightbox {
-    width: 100%;
-    max-width: 100%;
-    padding: 8px;
+  .mefane-container {
+    width: calc(100% - 28px);
   }
 
-  .mefane-lightbox-content {
+  .mefane-project,
+  .mefane-service-card,
+  .mefane-company-card,
+  .mefane-contact-card,
+  .mefane-trust-card,
+  .mefane-form {
     width: 100%;
     max-width: 100%;
+  }
+
+  .mefane-page h1,
+  .mefane-page h2,
+  .mefane-page h3,
+  .mefane-page p,
+  .mefane-page a,
+  .mefane-page span,
+  .mefane-page strong {
+    overflow-wrap: anywhere;
+    word-break: normal;
   }
 }
 
-@media (max-width: 380px) {
-  .mefane-container,
-  .mefane-topbar-inner,
-  .mefane-navbar-inner,
-  .mefane-footer-inner {
-    width: calc(100% - 24px) !important;
+@media (max-width: 360px) {
+  .mefane-container {
+    width: calc(100% - 24px);
   }
 
-  .mefane-hero,
-  .mefane-section {
-    padding-top: 42px;
-    padding-bottom: 42px;
+  .mefane-logo-name {
+    font-size: 12px;
+    letter-spacing: 0.04em;
   }
 
-  .mefane-page .mefane-hero h1 {
-    font-size: clamp(28px, 8.8vw, 36px);
-  }
-
-  .mefane-form {
-    padding: 14px;
-  }
-
-  .mefane-company-card {
-    padding: 16px 12px;
+  .mefane-logo-subtitle {
+    letter-spacing: 0.12em;
   }
 }
