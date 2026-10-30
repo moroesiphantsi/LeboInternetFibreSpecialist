@@ -422,6 +422,9 @@ export default function Home() {
             <a href="#contact">Contact</a>
           </nav>
 
+          <a href="#contact" className="mefane-btn mefane-btn-primary">
+            Request Engineering Services
+          </a>
 
           <button
             type="button"
@@ -442,6 +445,16 @@ export default function Home() {
           <a href="#experience" onClick={() => setMobileMenuOpen(false)}>Experience</a>
           <a href="#portfolio" onClick={() => setMobileMenuOpen(false)}>Portfolio</a>
           <a href="#contact" onClick={() => setMobileMenuOpen(false)}>Contact</a>
+          <div style={{ marginTop: "15px" }}>
+            <a
+              href="#contact"
+              onClick={() => setMobileMenuOpen(false)}
+              className="mefane-btn mefane-btn-primary"
+              style={{ width: "100%" }}
+            >
+              Request Engineering Services
+            </a>
+          </div>
         </div>
       )}
 
@@ -469,7 +482,7 @@ export default function Home() {
 
             <div className="mefane-hero-actions">
               <a href="#contact" className="mefane-btn mefane-btn-primary">
-                Request Engineering Services <ChevronRight />
+                Call Us Today <ChevronRight />
               </a>
               <a href="#portfolio" className="mefane-btn mefane-btn-secondary">
                 View My Projects
