@@ -3189,3 +3189,129 @@ html {
     transition-duration: 0.01ms !important;
   }
 }
+
+/* =========================================================
+   PHONE WIDTH SAFETY PATCH
+   Prevents content from being positioned beyond the right edge
+   of narrow phone screens. Keep this block at the very end.
+   ========================================================= */
+html,
+body,
+#root {
+  width: 100%;
+  max-width: 100%;
+  min-width: 0;
+  margin-inline: 0;
+}
+
+.mefane-page {
+  width: 100%;
+  max-width: 100%;
+  min-width: 0;
+  overflow-x: clip;
+}
+
+.mefane-page *,
+.mefane-page *::before,
+.mefane-page *::after {
+  box-sizing: border-box;
+  min-width: 0;
+}
+
+.mefane-container {
+  width: calc(100% - 32px);
+  max-width: 1180px;
+  margin-inline: auto;
+}
+
+.mefane-page img,
+.mefane-page video,
+.mefane-page iframe,
+.mefane-page svg {
+  max-width: 100%;
+}
+
+@media (max-width: 600px) {
+  /* Stack content instead of allowing a second column off-screen. */
+  .mefane-hero-grid,
+  .mefane-about-grid,
+  .mefane-contact-grid,
+  .mefane-trust-grid,
+  .mefane-services-grid,
+  .mefane-company-grid,
+  .mefane-form-grid,
+  .mefane-portfolio-grid {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr);
+    width: 100%;
+    max-width: 100%;
+  }
+
+  .mefane-section,
+  .mefane-hero,
+  .mefane-trust,
+  .mefane-footer {
+    width: 100%;
+    max-width: 100%;
+  }
+
+  .mefane-topbar-inner,
+  .mefane-topbar-location,
+  .mefane-topbar-contact,
+  .mefane-navbar-inner,
+  .mefane-footer-inner,
+  .mefane-hero-actions,
+  .mefane-hero-meta,
+  .mefane-about-location {
+    min-width: 0;
+    max-width: 100%;
+    flex-wrap: wrap;
+  }
+
+  .mefane-mobile-menu {
+    left: 0;
+    right: 0;
+    width: auto;
+    max-width: 100%;
+  }
+
+  .mefane-container {
+    width: calc(100% - 28px);
+  }
+
+  .mefane-project,
+  .mefane-service-card,
+  .mefane-company-card,
+  .mefane-contact-card,
+  .mefane-trust-card,
+  .mefane-form {
+    width: 100%;
+    max-width: 100%;
+  }
+
+  .mefane-page h1,
+  .mefane-page h2,
+  .mefane-page h3,
+  .mefane-page p,
+  .mefane-page a,
+  .mefane-page span,
+  .mefane-page strong {
+    overflow-wrap: anywhere;
+    word-break: normal;
+  }
+}
+
+@media (max-width: 360px) {
+  .mefane-container {
+    width: calc(100% - 24px);
+  }
+
+  .mefane-logo-name {
+    font-size: 12px;
+    letter-spacing: 0.04em;
+  }
+
+  .mefane-logo-subtitle {
+    letter-spacing: 0.12em;
+  }
+}
