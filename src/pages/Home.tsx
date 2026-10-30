@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import {
   FlashOn as Zap,
   Build as Wrench,
@@ -23,6 +23,9 @@ import {
   Kitchen,
   Handyman,
   PlaceOutlined as PinOutline,
+  Pause,
+  VolumeOff,
+  VolumeUp,
 } from "@mui/icons-material";
 import './Home.css';
 
@@ -56,6 +59,113 @@ export default function Home() {
   const [activeCategory, setActiveCategory] = useState("All");
   const [selectedImage, setSelectedImage] = useState<PortfolioItem | null>(null);
   const [scrolled, setScrolled] = useState(false);
+
+  /* ----------------------------------------
+     HERO VIDEO CONTROLS
+  ----------------------------------------- */
+  const videoRef = useRef<HTMLVideoElement | null>(null);
+  const [videoPlaying, setVideoPlaying] = useState(true);
+  const [videoMuted, setVideoMuted] = useState(true);
+
+  const toggleVideoPlay = () => {
+    const video = videoRef.current;
+    if (!video) return;
+    if (video.paused) {
+      void video.play();
+    } else {
+      video.pause();
+    }
+  };
+
+  const toggleVideoSound = () => {
+    const video = videoRef.current;
+    if (!video) return;
+    video.muted = !video.muted;
+    setVideoMuted(video.muted);
+    if (!video.muted && video.paused) {
+      void video.play();
+    }
+  };
+
+  const openVideoFullscreen = () => {
+    const video = videoRef.current as
+      | (HTMLVideoElement & {
+          webkitEnterFullscreen?: () => void;
+          webkitRequestFullscreen?: () => void;
+        })
+      | null;
+    if (!video) return;
+    if (video.requestFullscreen) {
+      void video.requestFullscreen();
+    } else if (video.webkitEnterFullscreen) {
+      video.webkitEnterFullscreen();
+    } else if (video.webkitRequestFullscreen) {
+      video.webkitRequestFullscreen();
+    }
+  };
+
+  /* ----------------------------------------
+     LAYOUT CHECK: open the site with ?debug at the end of the
+     address to list anything wider than the phone screen.
+  ----------------------------------------- */
+  useEffect(() => {
+    if (!window.location.search.includes("debug")) return;
+
+    const box = document.createElement("pre");
+    box.style.cssText =
+      "position:fixed;left:0;right:0;bottom:0;z-index:99999;margin:0;padding:8px;max-height:55vh;overflow:auto;background:rgba(150,0,0,0.94);color:#fff;font:10px/1.4 monospace;white-space:pre-wrap;pointer-events:none;";
+    document.body.appendChild(box);
+
+    const run = () => {
+      const visual = window.visualViewport;
+      const vw = visual ? visual.width : window.innerWidth;
+      const lines: string[] = [
+        `screen ${window.screen.width} | inner ${window.innerWidth} | visual ${Math.round(vw)} | docClient ${document.documentElement.clientWidth} | docScroll ${document.documentElement.scrollWidth} | bodyScroll ${document.body.scrollWidth} | dpr ${window.devicePixelRatio}`,
+        "Elements wider than the screen:",
+      ];
+      const offenders: { label: string; right: number; width: number }[] = [];
+
+      document.querySelectorAll(".mefane-page *").forEach((el) => {
+        const rect = el.getBoundingClientRect();
+        if (rect.width === 0 || rect.right <= vw + 1) return;
+
+        let clipped = false;
+        let parent = el.parentElement;
+        while (parent && !parent.classList.contains("mefane-page")) {
+          const overflowX = window.getComputedStyle(parent).overflowX;
+          if (overflowX !== "visible" && parent.getBoundingClientRect().right <= vw + 1) {
+            clipped = true;
+            break;
+          }
+          parent = parent.parentElement;
+        }
+        if (clipped) return;
+
+        const cls = typeof el.className === "string" ? el.className.trim().split(/\s+/)[0] : "";
+        offenders.push({
+          label: `${el.tagName.toLowerCase()}${cls ? "." + cls : ""}`,
+          right: Math.round(rect.right),
+          width: Math.round(rect.width),
+        });
+      });
+
+      offenders
+        .sort((a, b) => b.right - a.right)
+        .slice(0, 12)
+        .forEach((o) => lines.push(`${o.label}  width ${o.width}  right ${o.right}`));
+      if (offenders.length === 0) lines.push("none found");
+
+      box.textContent = lines.join("\n");
+    };
+
+    const timer = window.setTimeout(run, 1500);
+    window.addEventListener("resize", run);
+    return () => {
+      window.clearTimeout(timer);
+      window.removeEventListener("resize", run);
+      box.remove();
+    };
+  }, []);
 
   /* ----------------------------------------
      SCROLL EFFECT
@@ -315,7 +425,9 @@ export default function Home() {
             type="button"
             onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
             className="mefane-mobile-button"
-            aria-label="Toggle Menu"
+            aria-label={mobileMenuOpen ? "Close navigation menu" : "Open navigation menu"}
+            aria-expanded={mobileMenuOpen}
+            aria-controls="mefane-mobile-navigation"
           >
             {mobileMenuOpen ? <X /> : <Menu />}
           </button>
@@ -323,7 +435,7 @@ export default function Home() {
       </header>
 
       {mobileMenuOpen && (
-        <div className="mefane-mobile-menu">
+        <nav id="mefane-mobile-navigation" className="mefane-mobile-menu" aria-label="Mobile navigation">
           <a href="#home" onClick={() => setMobileMenuOpen(false)}>Home</a>
           <a href="#services" onClick={() => setMobileMenuOpen(false)}>Services</a>
           <a href="#about" onClick={() => setMobileMenuOpen(false)}>About Us</a>
@@ -340,7 +452,7 @@ export default function Home() {
               Request Engineering Services
             </a>
           </div>
-        </div>
+        </nav>
       )}
 
       {/* ========================================
@@ -391,16 +503,60 @@ export default function Home() {
           <div className="mefane-video-wrapper">
             <div className="mefane-video-glow"></div>
             <div className="mefane-video-card">
-              <video className="mefane-video" autoPlay muted loop playsInline>
+              <video
+                ref={videoRef}
+                className="mefane-video"
+                autoPlay
+                muted
+                loop
+                playsInline
+                preload="metadata"
+                onPlay={() => setVideoPlaying(true)}
+                onPause={() => setVideoPlaying(false)}
+              >
                 <source src={require("../assets/video1.mp4")} type="video/mp4" />
                 Your browser does not support the video tag.
               </video>
+
+              <div className="mefane-video-controls">
+                <button
+                  type="button"
+                  className="mefane-video-control"
+                  onClick={toggleVideoPlay}
+                  aria-label={videoPlaying ? "Pause video" : "Play video"}
+                >
+                  {videoPlaying ? <Pause style={{ fontSize: "20px" }} /> : <Play style={{ fontSize: "20px" }} />}
+                </button>
+                <button
+                  type="button"
+                  className="mefane-video-control"
+                  onClick={toggleVideoSound}
+                  aria-label={videoMuted ? "Turn sound on" : "Turn sound off"}
+                >
+                  {videoMuted ? <VolumeOff style={{ fontSize: "20px" }} /> : <VolumeUp style={{ fontSize: "20px" }} />}
+                </button>
+                <button
+                  type="button"
+                  className="mefane-video-control"
+                  onClick={openVideoFullscreen}
+                  aria-label="Full screen"
+                >
+                  <Maximize2 style={{ fontSize: "20px" }} />
+                </button>
+              </div>
+
               <div className="mefane-video-overlay">
                 <div className="mefane-video-badge">
                   <Play style={{ fontSize: "12px" }} /> Featured Reel
                 </div>
-                <h3>Precision & Power in Action</h3>
+                <h3>Precision &amp; Power in Action</h3>
                 <p>Watch our elite technicians executing top-grade electrical and construction work across Maseru.</p>
+                <div className="mefane-video-tags">
+                  <span>Electrical</span>
+                  <span>Plumbing</span>
+                  <span>Construction</span>
+                  <span>Cold Rooms</span>
+                </div>
               </div>
             </div>
           </div>
