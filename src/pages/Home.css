@@ -2326,3 +2326,154 @@ html {
     height: 36px;
   }
 }
+
+/* =========================================================
+   PHONE FIX — STOP THE PAGE BEING WIDER THAN THE SCREEN
+   (prevents cut-off text, missing menu button, sideways drag)
+   ========================================================= */
+
+html,
+body {
+  width: 100%;
+  max-width: 100%;
+  margin: 0;
+  overflow-x: hidden;
+}
+
+.mefane-page {
+  width: 100%;
+  max-width: 100%;
+  overflow-x: hidden;
+}
+
+@supports (overflow: clip) {
+  html,
+  body,
+  .mefane-page {
+    overflow-x: clip;
+  }
+}
+
+/* Grid/flex children may shrink below their content width.
+   Without this, one long line of text can stretch the whole page. */
+.mefane-hero-grid > *,
+.mefane-about-grid > *,
+.mefane-contact-grid > *,
+.mefane-services-grid > *,
+.mefane-portfolio-grid > *,
+.mefane-trust-grid > *,
+.mefane-company-grid > *,
+.mefane-form-grid > *,
+.mefane-footer-inner > *,
+.mefane-navbar-inner > *,
+.mefane-topbar-inner > *,
+.mefane-contact-cards > *,
+.mefane-about-stats > *,
+.mefane-hero-meta > *,
+.mefane-project,
+.mefane-project-info,
+.mefane-trust-card > div,
+.mefane-contact-card > div {
+  min-width: 0;
+  max-width: 100%;
+}
+
+.mefane-hero-content,
+.mefane-video-wrapper,
+.mefane-about-content {
+  min-width: 0;
+  max-width: 100%;
+}
+
+/* Long text wraps instead of pushing the page wider */
+.mefane-page h1,
+.mefane-page h2,
+.mefane-page h3,
+.mefane-page h4,
+.mefane-page p,
+.mefane-page a,
+.mefane-page span {
+  overflow-wrap: break-word;
+}
+
+.mefane-page input,
+.mefane-page select,
+.mefane-page textarea {
+  max-width: 100%;
+  min-width: 0;
+}
+
+.mefane-hero {
+  overflow: hidden;
+}
+
+@media (max-width: 900px) {
+  .mefane-hero-grid,
+  .mefane-about-grid,
+  .mefane-contact-grid {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .mefane-hero::before,
+  .mefane-hero::after {
+    width: 320px;
+    height: 320px;
+  }
+}
+
+@media (max-width: 600px) {
+  .mefane-hero-grid,
+  .mefane-trust-grid,
+  .mefane-services-grid,
+  .mefane-company-grid,
+  .mefane-form-grid {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .mefane-portfolio-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  /* Heading letters/words were squeezed together */
+  .mefane-page .mefane-hero h1 {
+    letter-spacing: -0.025em;
+    word-spacing: 0.1em;
+    font-weight: 900;
+  }
+
+  .mefane-page .mefane-eyebrow {
+    white-space: normal;
+    text-align: center;
+    line-height: 1.5;
+    max-width: 100%;
+  }
+
+  .mefane-hero-content {
+    text-align: center;
+  }
+
+  .mefane-hero-content .mefane-eyebrow,
+  .mefane-hero-actions {
+    justify-content: center;
+  }
+
+  .mefane-hero-description {
+    margin-left: auto;
+    margin-right: auto;
+  }
+
+  /* Project names may wrap to two lines instead of being cut off */
+  .mefane-project-title {
+    white-space: normal;
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+  }
+}
+
+@media (max-width: 380px) {
+  .mefane-portfolio-grid {
+    grid-template-columns: minmax(0, 1fr);
+  }
+}
