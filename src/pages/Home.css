@@ -2332,28 +2332,6 @@ html {
    (prevents cut-off text, missing menu button, sideways drag)
    ========================================================= */
 
-html,
-body {
-  width: 100%;
-  max-width: 100%;
-  margin: 0;
-  overflow-x: hidden;
-}
-
-.mefane-page {
-  width: 100%;
-  max-width: 100%;
-  overflow-x: hidden;
-}
-
-@supports (overflow: clip) {
-  html,
-  body,
-  .mefane-page {
-    overflow-x: clip;
-  }
-}
-
 /* Grid/flex children may shrink below their content width.
    Without this, one long line of text can stretch the whole page. */
 .mefane-hero-grid > *,
