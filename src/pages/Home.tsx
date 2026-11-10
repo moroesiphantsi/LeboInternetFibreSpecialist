@@ -1,895 +1,568 @@
-import React, { useEffect, useRef, useState } from "react";
+import React, { useEffect, useMemo, useRef, useState } from "react";
 import {
-  FlashOn as Zap,
-  Build as Wrench,
-  Construction as Hammer,
-  Home as HomeIcon,
-  Verified as ShieldCheck,
-  AccessTime as Clock,
-  AttachMoney as DollarSign,
-  Phone,
-  LocationOn as MapPin,
-  CheckCircle as CheckCircle2,
-  Menu,
-  Close as X,
-  PlayArrow as Play,
-  ChevronRight,
-  WorkspacePremium as Award,
-  Layers,
-  AutoAwesome as Sparkles,
-  Fullscreen as Maximize2,
-  Business as Building,
-  Restaurant,
-  Kitchen,
-  Handyman,
-  PlaceOutlined as PinOutline,
-  Pause,
-  VolumeOff,
-  VolumeUp,
+  Phone, WhatsApp, Email, LocationOn, Close, Menu, ChevronLeft, ChevronRight,
+  Pause, PlayArrow, VolumeOff, VolumeUp, Fullscreen, Plumbing, WaterDrop,
+  Whatshot, SolarPower, Engineering, Home as HomeIcon, Verified, Add,
+  DarkMode, LightMode, KeyboardArrowUp, Bolt, Star, Favorite, FavoriteBorder,
+  Download, Share, ZoomIn, Search, GridView, ViewQuilt, Shuffle, ContactPage, Slideshow,
 } from "@mui/icons-material";
-import './Home.css';
+import "./Home.css";
 
-interface PortfolioItem {
-  id: number;
-  title: string;
-  category: string;
-  image: string;
-}
+/* ---------- ASSETS (works with .jpg / .jpeg / .png / .webp automatically) ---------- */
+const imgCtx = (require as any).context("../assets", false, /^\.\/mtt(\d+)\.(jpe?g|png|webp)$/i);
+const vidCtx = (require as any).context("../assets", false, /^\.\/mttVideo\.(mp4|webm|mov)$/i);
+const asUrl = (m: any) => (m && m.default ? m.default : m);
+const PHOTOS: { n: number; src: string }[] = imgCtx
+  .keys()
+  .map((k: string) => ({ n: Number(k.match(/mtt(\d+)/i)![1]), src: asUrl(imgCtx(k)) }))
+  .sort((a: any, b: any) => a.n - b.n);
+const VIDEO: string | null = vidCtx.keys().length ? asUrl(vidCtx(vidCtx.keys()[0])) : null;
+const LOGO: string = asUrl(require("../assets/mttLOGO.jpeg"));
 
-interface ServiceItem {
-  title: string;
-  description: string;
-  icon: React.ReactNode;
-}
+/* ---------- BUSINESS DETAILS ---------- */
+const PHONE_1 = "+266 6292 0883";
+const PHONE_2 = "+266 5967 3049";
+const EMAIL = "mttplumberscon@gmail.com";
+const WA = "26662920883";
 
-interface CompanyItem {
-  name: string;
-  tag: string;
-  location?: string;
-  description: string;
-  highlights: string[];
-  phone?: string;
-  phoneHref?: string;
-  phoneNote?: string;
-  icon: React.ReactNode;
-}
+const SERVICES = [
+  { icon: <Plumbing />, t: "Plumbing & repairs", d: "Leaks, burst pipes, blocked drains, taps, toilets and full house re-piping." },
+  { icon: <SolarPower />, t: "Solar geysers", d: "Supply, installation and servicing of solar water heaters and evacuated-tube systems." },
+  { icon: <Whatshot />, t: "Geysers & hot water", d: "Electric geyser replacement, thermostats, pressure valves and insulation." },
+  { icon: <WaterDrop />, t: "Boreholes & water tanks", d: "Tank stands, pumps, pressure systems and rainwater harvesting." },
+  { icon: <Engineering />, t: "Drainage & sewer", d: "Septic tanks, soak-aways, sewer lines and stormwater drainage." },
+  { icon: <HomeIcon />, t: "Building & contracting", d: "New builds, renovations, bathrooms, kitchens and roofing, delivered start to finish." },
+];
+
+const AREAS = {
+  Lesotho: ["Maseru", "Leribe", "Berea", "Mafeteng", "Mohale's Hoek", "Quthing", "Qacha's Nek", "Mokhotlong", "Thaba-Tseka", "Butha-Buthe"],
+  "South Africa": ["Free State", "Gauteng", "KwaZulu-Natal", "Eastern Cape", "Western Cape", "Northern Cape", "North West", "Limpopo", "Mpumalanga"],
+};
+
+const STEPS = [
+  ["Tell us the problem", "Call, WhatsApp or use the quote form below."],
+  ["Site visit and quote", "We inspect the job and give you a clear, written price."],
+  ["Work done properly", "Qualified plumbers and builders, with tidy and safe work."],
+  ["Handover and support", "We test everything with you and stay reachable afterwards."],
+];
+
+const REVIEWS = [
+  ["Solar geyser installed in one day, and the hot water has been excellent since.", "Homeowner, Maseru"],
+  ["They arrived fast for a burst pipe and left the place clean. Fair price too.", "Property manager, Bloemfontein"],
+  ["Our full bathroom renovation finished on time and looks superb.", "Homeowner, Leribe"],
+];
+
+const FAQ = [
+  ["Do you work in both South Africa and Lesotho?", "Yes. We work nationwide in Lesotho and South Africa, including cross-border jobs."],
+  ["Do you handle emergencies?", "Call or WhatsApp us any time. Emergency leaks and burst pipes are prioritised."],
+  ["Is the quote free?", "Quotes through WhatsApp are free. For larger jobs we visit the site first so the price is accurate."],
+  ["Can you install solar water heaters?", "Yes. We supply, install and service solar geysers and evacuated-tube systems."],
+];
+
+const PAGE = 12;
+
+/* Optional portfolio categories: list the photo numbers for each group and filter chips appear.
+   Example: { "Solar geysers": [1, 2, 5], "Bathrooms": [3, 4, 9] } */
+const CATEGORIES: Record<string, number[]> = {};
+
+const TIPS = [
+  ["Burst pipe", "Close the main water valve, open the taps to drain the line, switch off the geyser at the board, then call us."],
+  ["No hot water", "Check the geyser breaker and the thermostat reset button. If it still stays cold, do not keep resetting it. Call us."],
+  ["Blocked drain", "Stop pouring water down it. Avoid harsh chemicals, which can damage pipes. We clear it properly."],
+];
+
+const NAV_IDS = ["services", "portfolio", "video", "areas", "faq", "contact"];
+
+const saveContact = () => {
+  const v = ["BEGIN:VCARD", "VERSION:3.0", "FN:MTT Plumbers & Contractors", "ORG:MTT Plumbers & Contractors",
+    `TEL;TYPE=CELL:${PHONE_1.replace(/\s/g, "")}`, `TEL;TYPE=CELL:${PHONE_2.replace(/\s/g, "")}`, `EMAIL:${EMAIL}`, "END:VCARD"].join("\r\n");
+  const a = document.createElement("a");
+  a.href = URL.createObjectURL(new Blob([v], { type: "text/vcard" }));
+  a.download = "MTT-Plumbers-Contractors.vcf";
+  a.click();
+};
 
 export default function Home() {
-  // Ensure the browser uses the real device width on phones.
-  useEffect(() => {
-    let viewport = document.querySelector<HTMLMetaElement>('meta[name="viewport"]');
-    if (!viewport) {
-      viewport = document.createElement("meta");
-      viewport.name = "viewport";
-      document.head.appendChild(viewport);
-    }
-    viewport.content = "width=device-width, initial-scale=1, viewport-fit=cover";
-  }, []);
-  const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
-  const [activeCategory, setActiveCategory] = useState("All");
-  const [selectedImage, setSelectedImage] = useState<PortfolioItem | null>(null);
+  const [theme, setTheme] = useState<"light" | "dark">("light");
+  const [menu, setMenu] = useState(false);
   const [scrolled, setScrolled] = useState(false);
+  const [progress, setProgress] = useState(0);
+  const [shown, setShown] = useState(PAGE);
+  const [lightbox, setLightbox] = useState<number | null>(null);
+  const [faq, setFaq] = useState<number | null>(0);
+  const [playing, setPlaying] = useState(true);
+  const [muted, setMuted] = useState(true);
+  const [form, setForm] = useState({ name: "", phone: "", service: SERVICES[0].t, country: "Lesotho", place: "", msg: "" });
+  const [copied, setCopied] = useState(false);
+  const [active, setActive] = useState("");
+  const [toast, setToast] = useState("");
+  const [favs, setFavs] = useState<number[]>(() => {
+    try { return JSON.parse(localStorage.getItem("mtt-favs") || "[]"); } catch { return []; }
+  });
+  const [onlyFavs, setOnlyFavs] = useState(false);
+  const [q, setQ] = useState("");
+  const [cat, setCat] = useState("All");
+  const [sort, setSort] = useState<"asc" | "desc" | "shuffle">("asc");
+  const [seed, setSeed] = useState(1);
+  const [view, setView] = useState<"masonry" | "grid">("masonry");
+  const [zoom, setZoom] = useState(false);
+  const [auto, setAuto] = useState(false);
+  const touchX = useRef(0);
+  const [people, setPeople] = useState(4);
+  const [usage, setUsage] = useState(50);
 
-  /* ----------------------------------------
-     HERO VIDEO CONTROLS
-  ----------------------------------------- */
-  const videoRef = useRef<HTMLVideoElement | null>(null);
-  const [videoPlaying, setVideoPlaying] = useState(true);
-  const [videoMuted, setVideoMuted] = useState(true);
+  const list = useMemo(() => {
+    let l = PHOTOS.filter((p) =>
+      (!onlyFavs || favs.includes(p.n)) &&
+      (!q.trim() || String(p.n).includes(q.trim())) &&
+      (cat === "All" || (CATEGORIES[cat] || []).includes(p.n)));
+    if (sort === "desc") l = [...l].reverse();
+    if (sort === "shuffle") l = [...l].sort((a, b) => Math.sin(a.n * seed) - Math.sin(b.n * seed));
+    return l;
+  }, [onlyFavs, favs, q, cat, sort, seed]);
 
-  const toggleVideoPlay = () => {
-    const video = videoRef.current;
-    if (!video) return;
-    if (video.paused) {
-      void video.play();
-    } else {
-      video.pause();
-    }
+  const say = (m: string) => { setToast(m); setTimeout(() => setToast(""), 1800); };
+  const toggleFav = (n: number) => {
+    const next = favs.includes(n) ? favs.filter((x) => x !== n) : [...favs, n];
+    setFavs(next);
+    try { localStorage.setItem("mtt-favs", JSON.stringify(next)); } catch { /* ignore */ }
+    say(favs.includes(n) ? "Removed from favourites" : "Saved to favourites");
   };
-
-  const toggleVideoSound = () => {
-    const video = videoRef.current;
-    if (!video) return;
-    video.muted = !video.muted;
-    setVideoMuted(video.muted);
-    if (!video.muted && video.paused) {
-      void video.play();
-    }
+  const shareLink = async (n: number) => {
+    const text = `Check out this MTT Plumbers & Contractors project (photo ${n}). Call ${PHONE_1}.`;
+    try {
+      if (navigator.share) await navigator.share({ title: "MTT Plumbers & Contractors", text, url: window.location.href });
+      else window.open(`https://wa.me/?text=${encodeURIComponent(text + " " + window.location.href)}`, "_blank", "noopener");
+    } catch { /* cancelled */ }
   };
+  const openAt = (i: number, slideshow = false) => { setZoom(false); setAuto(slideshow); setLightbox(i); };
+  const step = (d: number) => { setZoom(false); setLightbox((i) => (i === null || !list.length ? i : (i + d + list.length) % list.length)); };
 
-  const openVideoFullscreen = () => {
-    const video = videoRef.current as
-      | (HTMLVideoElement & {
-          webkitEnterFullscreen?: () => void;
-          webkitRequestFullscreen?: () => void;
-        })
-      | null;
-    if (!video) return;
-    if (video.requestFullscreen) {
-      void video.requestFullscreen();
-    } else if (video.webkitEnterFullscreen) {
-      video.webkitEnterFullscreen();
-    } else if (video.webkitRequestFullscreen) {
-      video.webkitRequestFullscreen();
-    }
-  };
+  const litres = people * usage;
+  const size = [100, 150, 200, 300, 450, 600].find((s) => s >= litres) || 600;
 
-  /* ----------------------------------------
-     LAYOUT CHECK: open the site with ?debug at the end of the
-     address to list anything wider than the phone screen.
-  ----------------------------------------- */
   useEffect(() => {
-    if (!window.location.search.includes("debug")) return;
+    const els = NAV_IDS.map((id) => document.getElementById(id)).filter(Boolean) as HTMLElement[];
+    const io = new IntersectionObserver((es) => es.forEach((e) => e.isIntersecting && setActive(e.target.id)), { rootMargin: "-45% 0px -50% 0px" });
+    els.forEach((e) => io.observe(e));
+    return () => io.disconnect();
+  }, []);
+  const video = useRef<HTMLVideoElement>(null);
+  const statsRef = useRef<HTMLDivElement>(null);
+  const [counts, setCounts] = useState([0, 0, 0]);
 
-    const box = document.createElement("pre");
-    box.style.cssText =
-      "position:fixed;left:0;right:0;bottom:0;z-index:99999;margin:0;padding:8px;max-height:55vh;overflow:auto;background:rgba(150,0,0,0.94);color:#fff;font:10px/1.4 monospace;white-space:pre-wrap;pointer-events:none;";
-    document.body.appendChild(box);
+  const STATS = [PHOTOS.length || 43, 2, 24];
+  const STAT_LABELS = ["Projects pictured", "Countries served", "Hour emergency line"];
 
-    const run = () => {
-      const visual = window.visualViewport;
-      const vw = visual ? visual.width : window.innerWidth;
-      const lines: string[] = [
-        `screen ${window.screen.width} | inner ${window.innerWidth} | visual ${Math.round(vw)} | docClient ${document.documentElement.clientWidth} | docScroll ${document.documentElement.scrollWidth} | bodyScroll ${document.body.scrollWidth} | dpr ${window.devicePixelRatio}`,
-        "Elements wider than the screen:",
-      ];
-      const offenders: { label: string; right: number; width: number }[] = [];
-
-      document.querySelectorAll(".mefane-page *").forEach((el) => {
-        const rect = el.getBoundingClientRect();
-        if (rect.width === 0 || rect.right <= vw + 1) return;
-
-        let clipped = false;
-        let parent = el.parentElement;
-        while (parent && !parent.classList.contains("mefane-page")) {
-          const overflowX = window.getComputedStyle(parent).overflowX;
-          if (overflowX !== "visible" && parent.getBoundingClientRect().right <= vw + 1) {
-            clipped = true;
-            break;
-          }
-          parent = parent.parentElement;
-        }
-        if (clipped) return;
-
-        const cls = typeof el.className === "string" ? el.className.trim().split(/\s+/)[0] : "";
-        offenders.push({
-          label: `${el.tagName.toLowerCase()}${cls ? "." + cls : ""}`,
-          right: Math.round(rect.right),
-          width: Math.round(rect.width),
-        });
-      });
-
-      offenders
-        .sort((a, b) => b.right - a.right)
-        .slice(0, 12)
-        .forEach((o) => lines.push(`${o.label}  width ${o.width}  right ${o.right}`));
-      if (offenders.length === 0) lines.push("none found");
-
-      box.textContent = lines.join("\n");
+  useEffect(() => {
+    const onScroll = () => {
+      const h = document.documentElement;
+      setScrolled(h.scrollTop > 40);
+      setProgress((h.scrollTop / (h.scrollHeight - h.clientHeight || 1)) * 100);
     };
-
-    const timer = window.setTimeout(run, 1500);
-    window.addEventListener("resize", run);
-    return () => {
-      window.clearTimeout(timer);
-      window.removeEventListener("resize", run);
-      box.remove();
-    };
+    window.addEventListener("scroll", onScroll, { passive: true });
+    return () => window.removeEventListener("scroll", onScroll);
   }, []);
 
-  /* ----------------------------------------
-     SCROLL EFFECT
-  ----------------------------------------- */
   useEffect(() => {
-    const handleScroll = () => {
-      setScrolled(window.scrollY > 20);
-    };
-    window.addEventListener("scroll", handleScroll);
-    return () => window.removeEventListener("scroll", handleScroll);
-  }, []);
-
-  /* ----------------------------------------
-     CLOSE MOBILE MENU ON RESIZE
-  ----------------------------------------- */
-  useEffect(() => {
-    const handleResize = () => {
-      if (window.innerWidth >= 768) {
-        setMobileMenuOpen(false);
-      }
-    };
-    window.addEventListener("resize", handleResize);
-    return () => window.removeEventListener("resize", handleResize);
-  }, []);
-
-  /* ----------------------------------------
-     CLOSE LIGHTBOX WITH ESCAPE KEY
-  ----------------------------------------- */
-  useEffect(() => {
-    const handleKeyDown = (event: KeyboardEvent) => {
-      if (event.key === "Escape") {
-        setSelectedImage(null);
-      }
-    };
-    window.addEventListener("keydown", handleKeyDown);
-    return () => window.removeEventListener("keydown", handleKeyDown);
-  }, []);
-
-  /* ----------------------------------------
-     SERVICES DATA
-  ----------------------------------------- */
-  const services: ServiceItem[] = [
-    {
-      title: "Electrical Installations",
-      description: "Complete residential & commercial wiring, panel upgrades, lighting, and safety inspections.",
-      icon: <Zap fontSize="large" />,
-    },
-    {
-      title: "Plumbing Services",
-      description: "Pipe repairs, geyser installations, bathroom plumbing, leak detection, and maintenance.",
-      icon: <Wrench fontSize="large" />,
-    },
-    {
-      title: "Brick-laying",
-      description: "Expert structural brickwork, boundary walls, foundations, and architectural masonry.",
-      icon: <Hammer fontSize="large" />,
-    },
-    {
-      title: "Ceilings",
-      description: "Suspended ceilings, rhinolite plastering, ornate cornices, and insulation installation.",
-      icon: <Layers fontSize="large" />,
-    },
-    {
-      title: "Flooring & Tiling",
-      description: "Precise ceramic, porcelain, laminate, and vinyl floor tiling with flawless finishing.",
-      icon: <HomeIcon fontSize="large" />,
-    },
-    {
-      title: "Freezer & Cold Room Maintenance",
-      description: "Commercial and industrial refrigeration maintenance, servicing, and emergency repairs.",
-      icon: <ShieldCheck fontSize="large" />,
-    },
-    {
-      title: "Fixing Refrigerators",
-      description: "Diagnostic and repair services for domestic and commercial fridges and cooling units.",
-      icon: <Award fontSize="large" />,
-    },
-    {
-      title: "Roofing",
-      description: "Roof construction, waterproofing, tile replacements, sheeting, and gutter installations.",
-      icon: <Sparkles fontSize="large" />,
-    },
-  ];
-
-  /* ----------------------------------------
-     COMPANIES WORKED WITH
-  ----------------------------------------- */
-  const companies: CompanyItem[] = [
-    {
-      name: "Nimble Tech Engineering",
-      tag: "Worked With",
-      description: "Hands-on engineering and maintenance work carried out together with the Nimble Tech Engineering team.",
-      highlights: ["Engineering", "Maintenance", "Site Work"],
-      phone: "+266 5610 5510",
-      phoneHref: "tel:+26656105510",
-      icon: <Building fontSize="large" />,
-    },
-    {
-      name: "Electro Fresh",
-      tag: "Worked With",
-      description: "Technical work carried out together with the Electro Fresh team.",
-      highlights: ["Electrical", "Refrigeration", "Maintenance"],
-      phone: "5712 5414",
-      phoneHref: "tel:57125414",
-      icon: <Kitchen fontSize="large" />,
-    },
-    {
-      name: "Hungry Lion",
-      tag: "Worked At",
-      location: "Mohale's Hoek",
-      description: "Worked at the Hungry Lion Mohale's Hoek branch under Nimble Tech Engineering.",
-      highlights: ["On-site Work", "Via Nimble Tech Engineering"],
-      phone: "+266 5610 5510",
-      phoneHref: "tel:+26656105510",
-      phoneNote: "Nimble Tech Engineering",
-      icon: <Restaurant fontSize="large" />,
-    },
-    {
-      name: "Jundralls",
-      tag: "Worked With",
-      location: "Mohale's Hoek",
-      description: "Electrical and plumbing maintenance carried out together with Jundralls in Mohale's Hoek.",
-      highlights: ["Electrical Maintenance", "Plumbing Maintenance"],
-      icon: <Handyman fontSize="large" />,
-    },
-  ];
-
-  /* ----------------------------------------
-     PORTFOLIO DATA (Pictures 1 to 37)
-  ----------------------------------------- */
-  const portfolioCategories = [
-    "All",
-    "Electrical",
-    "Plumbing & Cold Rooms",
-    "Construction & Tiling",
-    "Roofing & Ceilings",
-  ];
-
-  const portfolioItems: PortfolioItem[] = Array.from(
-    { length: 37 },
-    (_, index) => {
-      const id = index + 1;
-      let category = "Construction & Tiling";
-      let title = `Home Construction & Tiling #${id}`;
-
-      if (id % 4 === 1) {
-        category = "Electrical";
-        title = `Electrical Wiring & Panel Installation #${id}`;
-      } else if (id % 4 === 2) {
-        category = "Plumbing & Cold Rooms";
-        title = `Cold Room & Plumbing System #${id}`;
-      } else if (id % 4 === 3) {
-        category = "Roofing & Ceilings";
-        title = `Roofing & Ceiling Finishing #${id}`;
-      }
-
-      return {
-        id,
-        title,
-        category,
-        image: require(`../assets/picture${id}.jpg`), // Webpack/React asset resolution
+    const el = statsRef.current;
+    if (!el) return;
+    const io = new IntersectionObserver(([e]) => {
+      if (!e.isIntersecting) return;
+      io.disconnect();
+      const t0 = performance.now();
+      const tick = (t: number) => {
+        const p = Math.min((t - t0) / 1400, 1);
+        setCounts(STATS.map((s) => Math.round(s * (1 - Math.pow(1 - p, 3)))));
+        if (p < 1) requestAnimationFrame(tick);
       };
-    }
-  );
+      requestAnimationFrame(tick);
+    }, { threshold: 0.4 });
+    io.observe(el);
+    return () => io.disconnect();
+    // eslint-disable-next-line
+  }, []);
 
-  const filteredPortfolio =
-    activeCategory === "All"
-      ? portfolioItems
-      : portfolioItems.filter((item) => item.category === activeCategory);
+  useEffect(() => {
+    if (lightbox === null) return;
+    const key = (e: KeyboardEvent) => {
+      if (e.key === "Escape") setLightbox(null);
+      if (e.key === "ArrowRight") step(1);
+      if (e.key === "ArrowLeft") step(-1);
+      if (e.key === "+" || e.key === "z") setZoom((z) => !z);
+      if (e.key === " ") { e.preventDefault(); setAuto((x) => !x); }
+    };
+    document.body.style.overflow = "hidden";
+    window.addEventListener("keydown", key);
+    const timer = auto ? setInterval(() => step(1), 3000) : undefined;
+    return () => { window.removeEventListener("keydown", key); document.body.style.overflow = ""; if (timer) clearInterval(timer); };
+    // eslint-disable-next-line
+  }, [lightbox === null, auto, list.length]);
 
-  /* ----------------------------------------
-     FORM SUBMIT → WHATSAPP
-  ----------------------------------------- */
-  const handleFormSubmit = (event: React.FormEvent<HTMLFormElement>) => {
-    event.preventDefault();
+  useEffect(() => { document.querySelector(".mtt-thumb.on")?.scrollIntoView({ inline: "center", block: "nearest" }); }, [lightbox]);
 
-    const form = event.currentTarget;
-    const formData = new FormData(form);
+  const togglePlay = () => {
+    const v = video.current; if (!v) return;
+    if (v.paused) { void v.play(); setPlaying(true); } else { v.pause(); setPlaying(false); }
+  };
+  const toggleMute = () => {
+    const v = video.current; if (!v) return;
+    v.muted = !v.muted; setMuted(v.muted);
+    if (!v.muted && v.paused) { void v.play(); setPlaying(true); }
+  };
+  const fullscreen = () => { void video.current?.requestFullscreen?.(); };
 
-    const name = String(formData.get("name") || "").trim();
-    const phone = String(formData.get("phone") || "").trim();
-    const service = String(formData.get("service") || "").trim();
-    const details = String(formData.get("details") || "").trim();
+  const sendQuote = (e: React.FormEvent) => {
+    e.preventDefault();
+    const f = form;
+    const details = f.msg.trim() ? ` Job details: ${f.msg.trim()}${/[.!?]$/.test(f.msg.trim()) ? "" : "."}` : "";
+    const text =
+      `Hello MTT Plumbers & Contractors, my name is ${f.name.trim()}. ` +
+      `I am in ${f.place.trim()}, ${f.country}, and I need help with ${f.service.toLowerCase()}.${details} ` +
+      `Please send me a quote. You can reach me on ${f.phone.trim()}. Thank you.`;
+    window.open(`https://wa.me/${WA}?text=${encodeURIComponent(text)}`, "_blank", "noopener");
+  };
+  const copyEmail = async () => {
+    try { await navigator.clipboard.writeText(EMAIL); setCopied(true); setTimeout(() => setCopied(false), 1800); } catch { /* ignore */ }
+  };
+  const go = () => setMenu(false);
+  const set = (k: string) => (e: React.ChangeEvent<any>) => setForm({ ...form, [k]: e.target.value });
 
-    const whatsappNumber = "26659619361";
-
-    const message = [
-      "Hello Mefane Engineering,",
-      "",
-      "I would like to request an engineering quote.",
-      "",
-      `*Your Name:* ${name}`,
-      `*Phone Number:* ${phone}`,
-      `*Service Required:* ${service}`,
-      `*Project Details:* ${details}`,
-    ].join("\n");
-
-    const whatsappUrl = `https://wa.me/${whatsappNumber}?text=${encodeURIComponent(message)}`;
-
-    window.open(whatsappUrl, "_blank", "noopener,noreferrer");
+  const ld = {
+    "@context": "https://schema.org", "@type": "Plumber", name: "MTT Plumbers & Contractors",
+    telephone: PHONE_1, email: EMAIL, areaServed: ["Lesotho", "South Africa"],
   };
 
   return (
-    <div className="mefane-page">
-      {/* ========================================
-          TOP CONTACT BAR
-      ========================================= */}
-      <div className="mefane-topbar">
-        <div className="mefane-container mefane-topbar-inner">
-          <div className="mefane-topbar-location">
-            <MapPin style={{ fontSize: "16px" }} />
-            <span>Serving: Lesotho | South Africa</span>
+    <div className="mtt" data-theme={theme}>
+      <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(ld) }} />
+      <div className="mtt-progress" style={{ width: `${progress}%` }} />
+
+      {/* NAV */}
+      <header className={`mtt-nav ${scrolled ? "is-solid" : ""}`}>
+        <a href="#top" className="mtt-brand" aria-label="MTT Plumbers & Contractors">
+          MTT <small>Plumbers &amp; Contractors</small>
+        </a>
+        <nav className={`mtt-links ${menu ? "open" : ""}`}>
+          {[["services", "Services"], ["portfolio", "Portfolio"], ["video", "Watch"], ["areas", "Areas"], ["faq", "FAQ"], ["contact", "Contact"]].map(([id, l]) => (
+            <a key={id} href={`#${id}`} onClick={go} className={active === id ? "on" : ""}>{l}</a>
+          ))}
+          <a className="mtt-btn mtt-btn-sm" href={`tel:${PHONE_1.replace(/\s/g, "")}`}><Phone fontSize="small" /> Call now</a>
+        </nav>
+        <button className="mtt-icon" aria-label="Toggle theme" onClick={() => setTheme(theme === "light" ? "dark" : "light")}>
+          {theme === "light" ? <DarkMode /> : <LightMode />}
+        </button>
+        <button className="mtt-icon mtt-burger" aria-label="Menu" onClick={() => setMenu(!menu)}>
+          {menu ? <Close /> : <Menu />}
+        </button>
+      </header>
+
+      {/* HERO */}
+      <section id="top" className="mtt-hero">
+        {VIDEO && (
+          <video ref={video} className="mtt-hero-video" src={VIDEO} autoPlay muted loop playsInline poster={PHOTOS[0]?.src} />
+        )}
+        <div className="mtt-hero-shade" />
+        <div className="mtt-wrap mtt-hero-body">
+          <p className="mtt-kicker"><LocationOn fontSize="small" /> Lesotho and South Africa, nationwide</p>
+          <h1>Water, heat and structure, built to last.</h1>
+          <p className="mtt-lead">Plumbers and contractors for homes, farms and businesses. Solar geysers, repairs, drainage and full construction, with clear quotes and fast response.</p>
+          <div className="mtt-cta">
+            <a className="mtt-btn" href="#contact">Get a free quote</a>
+            <a className="mtt-btn mtt-btn-ghost" href={`https://wa.me/${WA}`} target="_blank" rel="noreferrer"><WhatsApp fontSize="small" /> WhatsApp us</a>
           </div>
-          <div className="mefane-topbar-contact">
-            <a href="tel:63740151">
-              <Phone style={{ fontSize: "14px" }} /> 63740151
-            </a>
-            <span>/</span>
-            <a href="tel:59619361">
-              <Phone style={{ fontSize: "14px" }} /> 59619361
-            </a>
+        </div>
+        {VIDEO && (
+          <div className="mtt-hero-ctl">
+            <button onClick={togglePlay} aria-label={playing ? "Pause video" : "Play video"}>{playing ? <Pause /> : <PlayArrow />}</button>
+            <button onClick={toggleMute} aria-label={muted ? "Unmute" : "Mute"}>{muted ? <VolumeOff /> : <VolumeUp />}</button>
+            <button onClick={fullscreen} aria-label="Fullscreen"><Fullscreen /></button>
           </div>
+        )}
+      </section>
+
+      {/* STATS */}
+      <div className="mtt-stats" ref={statsRef}>
+        <div className="mtt-wrap mtt-stats-grid">
+          {counts.map((c, i) => (
+            <div key={i}><strong>{c}{i === 2 ? "/7" : "+"}</strong><span>{STAT_LABELS[i]}</span></div>
+          ))}
         </div>
       </div>
 
-      {/* ========================================
-          NAVIGATION
-      ========================================= */}
-      <header className={`mefane-navbar ${scrolled ? "scrolled" : ""}`}>
-        <div className="mefane-container mefane-navbar-inner">
-          <a href="#home" className="mefane-logo">
-            <div>
-              <div className="mefane-logo-name">MEFANE</div>
-              <div className="mefane-logo-subtitle">Engineering</div>
+      {/* EMERGENCY */}
+      <aside className="mtt-emergency">
+        <div className="mtt-wrap">
+          <Bolt /> <span>Burst pipe or no hot water? We take emergency calls.</span>
+          <a href={`tel:${PHONE_2.replace(/\s/g, "")}`}>{PHONE_2}</a>
+        </div>
+      </aside>
+
+      {/* SERVICES */}
+      <section id="services" className="mtt-section">
+        <div className="mtt-wrap">
+          <h2>What we do</h2>
+          <p className="mtt-sub">One team for the pipes, the heat and the building around them.</p>
+          <div className="mtt-services">
+            {SERVICES.map((s) => (
+              <article key={s.t}><span className="mtt-ico">{s.icon}</span><h3>{s.t}</h3><p>{s.d}</p></article>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      {/* GEYSER CALCULATOR */}
+      <section className="mtt-section mtt-alt">
+        <div className="mtt-wrap mtt-calc">
+          <div>
+            <h2>Solar geyser size guide</h2>
+            <p className="mtt-sub">Tell us who lives in the house and we will suggest a tank size. It is a guide, and we confirm it on site.</p>
+          </div>
+          <div className="mtt-calc-card">
+            <label>People in the home: <b>{people}</b>
+              <input type="range" min={1} max={12} value={people} onChange={(e) => setPeople(+e.target.value)} />
+            </label>
+            <label>Hot water use
+              <select value={usage} onChange={(e) => setUsage(+e.target.value)}>
+                <option value={35}>Light (quick showers)</option>
+                <option value={50}>Normal</option>
+                <option value={70}>Heavy (baths, big family)</option>
+              </select>
+            </label>
+            <div className="mtt-calc-out"><strong>{size} litres</strong><span>suggested tank for about {litres} litres a day</span></div>
+            <a className="mtt-btn" target="_blank" rel="noreferrer"
+               href={`https://wa.me/${WA}?text=${encodeURIComponent(`Hello MTT, I would like a quote for a ${size} litre solar geyser for ${people} people.`)}`}>
+              <WhatsApp fontSize="small" /> Get a quote for {size} L
+            </a>
+          </div>
+        </div>
+      </section>
+
+      {/* PORTFOLIO */}
+      <section id="portfolio" className="mtt-section">
+        <div className="mtt-wrap">
+          <h2>Portfolio</h2>
+          <p className="mtt-sub">Real jobs from our crews. Save favourites, search by photo number, shuffle, or start a slideshow.</p>
+
+          <div className="mtt-bar">
+            <label className="mtt-search"><Search fontSize="small" />
+              <input placeholder="Photo number" inputMode="numeric" value={q} onChange={(e) => setQ(e.target.value.replace(/\D/g, ""))} aria-label="Search by photo number" />
+            </label>
+            <div className="mtt-chips">
+              <button className={cat === "All" && !onlyFavs ? "on" : ""} onClick={() => { setCat("All"); setOnlyFavs(false); }}>All</button>
+              <button className={onlyFavs ? "on" : ""} onClick={() => setOnlyFavs(!onlyFavs)}><Favorite fontSize="inherit" /> Favourites ({favs.length})</button>
+              {Object.keys(CATEGORIES).map((c) => <button key={c} className={cat === c ? "on" : ""} onClick={() => setCat(c)}>{c}</button>)}
             </div>
-          </a>
+            <div className="mtt-tools">
+              <select value={sort} onChange={(e) => { setSort(e.target.value as any); if (e.target.value === "shuffle") setSeed(Math.random() * 100 + 1); }} aria-label="Sort photos">
+                <option value="asc">Oldest first</option><option value="desc">Newest first</option><option value="shuffle">Shuffle</option>
+              </select>
+              {sort === "shuffle" && <button className="mtt-icon" aria-label="Shuffle again" onClick={() => setSeed(Math.random() * 100 + 1)}><Shuffle /></button>}
+              <button className={`mtt-icon ${view === "masonry" ? "on" : ""}`} aria-label="Masonry view" onClick={() => setView("masonry")}><ViewQuilt /></button>
+              <button className={`mtt-icon ${view === "grid" ? "on" : ""}`} aria-label="Grid view" onClick={() => setView("grid")}><GridView /></button>
+              <button className="mtt-btn mtt-btn-sm" disabled={!list.length} onClick={() => openAt(0, true)}><Slideshow fontSize="small" /> Slideshow</button>
+            </div>
+          </div>
+          <p className="mtt-count">Showing {Math.min(shown, list.length)} of {list.length} photos</p>
 
-          <nav className="mefane-nav-links">
-            <a href="#home">Home</a>
-            <a href="#services">Services</a>
-            <a href="#about">About Us</a>
-            <a href="#experience">Experience</a>
-            <a href="#portfolio">Portfolio</a>
-            <a href="#contact">Contact</a>
-          </nav>
-
-
-          <button
-            type="button"
-            onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
-            className="mefane-mobile-button"
-            aria-label="Toggle Menu"
-          >
-            {mobileMenuOpen ? <X /> : <Menu />}
-          </button>
+          {list.length === 0 ? (
+            <div className="mtt-empty">
+              <p>No photos match. {onlyFavs ? "Tap the heart on any photo to save it here." : "Try a different number."}</p>
+              <button className="mtt-btn mtt-btn-outline" onClick={() => { setQ(""); setCat("All"); setOnlyFavs(false); }}>Clear filters</button>
+            </div>
+          ) : (
+            <div className={`mtt-grid ${view}`}>
+              {list.slice(0, shown).map((p, i) => (
+                <div key={p.n} className="mtt-tile">
+                  <button className="mtt-open" onClick={() => openAt(i)} aria-label={`Open project photo ${p.n}`}>
+                    <img src={p.src} alt={`MTT project ${p.n}`} loading="lazy" />
+                  </button>
+                  <button className={`mtt-heart ${favs.includes(p.n) ? "on" : ""}`} onClick={() => toggleFav(p.n)} aria-pressed={favs.includes(p.n)} aria-label="Save to favourites">
+                    {favs.includes(p.n) ? <Favorite fontSize="small" /> : <FavoriteBorder fontSize="small" />}
+                  </button>
+                  <span className="mtt-tag">#{p.n}</span>
+                </div>
+              ))}
+            </div>
+          )}
+          {shown < list.length && (
+            <div className="mtt-center">
+              <button className="mtt-btn mtt-btn-outline" onClick={() => setShown(shown + PAGE)}><Add /> Show more ({list.length - shown} left)</button>
+              <button className="mtt-btn mtt-btn-outline" onClick={() => setShown(list.length)}>Show all</button>
+            </div>
+          )}
         </div>
-      </header>
+      </section>
 
-      {mobileMenuOpen && (
-        <div className="mefane-mobile-menu">
-          <a href="#home" onClick={() => setMobileMenuOpen(false)}>Home</a>
-          <a href="#services" onClick={() => setMobileMenuOpen(false)}>Services</a>
-          <a href="#about" onClick={() => setMobileMenuOpen(false)}>About Us</a>
-          <a href="#experience" onClick={() => setMobileMenuOpen(false)}>Experience</a>
-          <a href="#portfolio" onClick={() => setMobileMenuOpen(false)}>Portfolio</a>
-          <a href="#contact" onClick={() => setMobileMenuOpen(false)}>Contact</a>
-        </div>
+      {/* VIDEO SHOWCASE */}
+      {VIDEO && (
+        <section id="video" className="mtt-section mtt-dark">
+          <div className="mtt-wrap mtt-video-grid">
+            <div>
+              <h2>See the work in motion</h2>
+              <p className="mtt-sub">A short walk through our installations and site work.</p>
+              <a className="mtt-btn" href="#contact">Book a site visit</a>
+            </div>
+            <video className="mtt-video" src={VIDEO} controls playsInline preload="metadata" poster={PHOTOS[1]?.src} />
+          </div>
+        </section>
       )}
 
-      {/* ========================================
-          HERO SECTION (With video1.mp4)
-      ========================================= */}
-      <section id="home" className="mefane-hero">
-        <div className="mefane-container mefane-hero-grid">
-          <div className="mefane-hero-content animate-in">
-            <div className="mefane-eyebrow">
-              <Sparkles style={{ fontSize: "14px" }} />
-              BUILDING • RENOVATING • POWERING YOUR WORLD
-            </div>
-
-            <h1>
-              WE DO IT ALL, <br />
-              <span className="mefane-gradient-text">SO YOU DON&apos;T HAVE TO.</span>
-            </h1>
-
-            <p className="mefane-hero-description">
-              <strong>YOUR VISION. OUR EXPERTISE. Perfect Results!</strong> From
-              complete electrical installations and plumbing to heavy construction,
-              cold room maintenance, and sophisticated architectural finishes.
-            </p>
-
-            <div className="mefane-hero-actions">
-              <a href="#contact" className="mefane-btn mefane-btn-primary">
-                Request Engineering Services <ChevronRight />
-              </a>
-              <a href="#portfolio" className="mefane-btn mefane-btn-secondary">
-                View My Projects
-              </a>
-            </div>
-
-            <div className="mefane-hero-meta">
-              <div className="mefane-stat">
-                <strong>100%</strong>
-                <span>Excellence</span>
-              </div>
-              <div className="mefane-quote">
-                &quot;Every project big or small, we deliver excellence!&quot;
-                <br />
-                <span>— Mefane Engineering Team</span>
-              </div>
-            </div>
-          </div>
-
-          {/* Hero Video Preview using video1.mp4 */}
-          <div className="mefane-video-wrapper">
-            <div className="mefane-video-glow"></div>
-            <div className="mefane-video-card">
-              <video
-                ref={videoRef}
-                className="mefane-video"
-                autoPlay
-                muted
-                loop
-                playsInline
-                preload="metadata"
-                onPlay={() => setVideoPlaying(true)}
-                onPause={() => setVideoPlaying(false)}
-              >
-                <source src={require("../assets/video1.mp4")} type="video/mp4" />
-                Your browser does not support the video tag.
-              </video>
-
-              <div className="mefane-video-controls">
-                <button
-                  type="button"
-                  className="mefane-video-control"
-                  onClick={toggleVideoPlay}
-                  aria-label={videoPlaying ? "Pause video" : "Play video"}
-                >
-                  {videoPlaying ? <Pause style={{ fontSize: "20px" }} /> : <Play style={{ fontSize: "20px" }} />}
-                </button>
-                <button
-                  type="button"
-                  className="mefane-video-control"
-                  onClick={toggleVideoSound}
-                  aria-label={videoMuted ? "Turn sound on" : "Turn sound off"}
-                >
-                  {videoMuted ? <VolumeOff style={{ fontSize: "20px" }} /> : <VolumeUp style={{ fontSize: "20px" }} />}
-                </button>
-                <button
-                  type="button"
-                  className="mefane-video-control"
-                  onClick={openVideoFullscreen}
-                  aria-label="Full screen"
-                >
-                  <Maximize2 style={{ fontSize: "20px" }} />
-                </button>
-              </div>
-
-              <div className="mefane-video-overlay">
-                <div className="mefane-video-badge">
-                  <Play style={{ fontSize: "12px" }} /> Featured Reel
-                </div>
-                <h3>Precision &amp; Power in Action</h3>
-                <p>Watch our elite technicians executing top-grade electrical and construction work across Maseru.</p>
-                <div className="mefane-video-tags">
-                  <span>Electrical</span>
-                  <span>Plumbing</span>
-                  <span>Construction</span>
-                  <span>Cold Rooms</span>
-                </div>
-              </div>
-            </div>
-          </div>
+      {/* PROCESS */}
+      <section className="mtt-section">
+        <div className="mtt-wrap">
+          <h2>How a job runs</h2>
+          <ol className="mtt-steps">
+            {STEPS.map(([t, d], i) => (
+              <li key={t}><b>{i + 1}</b><h3>{t}</h3><p>{d}</p></li>
+            ))}
+          </ol>
         </div>
       </section>
 
-      {/* ========================================
-          TRUST BADGES
-      ========================================= */}
-      <section className="mefane-trust">
-        <div className="mefane-container mefane-trust-grid">
-          <div className="mefane-trust-card">
-            <div className="mefane-trust-icon"><Award /></div>
-            <div>
-              <h4>Professional Team</h4>
-              <p>Expert certified engineers</p>
-            </div>
-          </div>
-          <div className="mefane-trust-card">
-            <div className="mefane-trust-icon"><CheckCircle2 /></div>
-            <div>
-              <h4>Quality Workmanship</h4>
-              <p>Flawless results guaranteed</p>
-            </div>
-          </div>
-          <div className="mefane-trust-card">
-            <div className="mefane-trust-icon"><Clock /></div>
-            <div>
-              <h4>Reliable & On Time</h4>
-              <p>Punctual project delivery</p>
-            </div>
-          </div>
-          <div className="mefane-trust-card">
-            <div className="mefane-trust-icon"><DollarSign /></div>
-            <div>
-              <h4>Affordable Prices</h4>
-              <p>Competitive transparent rates</p>
-            </div>
-          </div>
-        </div>
-      </section>
-
-      {/* ========================================
-          SERVICES SECTION
-      ========================================= */}
-      <section id="services" className="mefane-section">
-        <div className="mefane-container">
-          <div className="mefane-section-header">
-            <div className="mefane-eyebrow">Our Services</div>
-            <h2 className="mefane-section-title">We Do It All, So You Don&apos;t Have To</h2>
-            <p className="mefane-section-description">
-              Every project big or small, we deliver excellence! Discover our full spectrum of home construction, renovation, and engineering solutions.
-            </p>
-          </div>
-
-          <div className="mefane-services-grid">
-            {services.map((service, index) => (
-              <div key={index} className="mefane-service-card">
-                <div>
-                  <div className="mefane-service-icon">{service.icon}</div>
-                  <h3>{service.title}</h3>
-                  <p>{service.description}</p>
-                </div>
-                <a href="#contact" className="mefane-service-link">
-                  Inquire Now <ChevronRight fontSize="small" />
-                </a>
+      {/* AREAS */}
+      <section id="areas" className="mtt-section mtt-alt">
+        <div className="mtt-wrap">
+          <h2>Where we work</h2>
+          <p className="mtt-sub">Nationwide in both countries. If your town is not listed, call us and we will tell you straight away.</p>
+          <div className="mtt-areas">
+            {Object.entries(AREAS).map(([c, list]) => (
+              <div key={c}>
+                <h3><LocationOn /> {c}</h3>
+                <ul>{list.map((a) => <li key={a}>{a}</li>)}</ul>
               </div>
             ))}
           </div>
         </div>
       </section>
 
-      {/* ========================================
-          ABOUT SECTION
-      ========================================= */}
-      <section id="about" className="mefane-section mefane-section-soft">
-        <div className="mefane-container mefane-about-grid">
-          <div className="mefane-about-content">
-            <div className="mefane-eyebrow">About Mefane Engineering</div>
-            <h2>We Build. We Fix. <span className="mefane-gradient-text">We Care.</span></h2>
-            <p>
-              Mefane Engineering is a premier engineering and home construction powerhouse operating across Lesotho. Our mission is to deliver absolute perfection in every project—from foundational brick-laying and high-voltage electrical installations to precision plumbing, cold room maintenance, and stunning architectural ceilings.
-            </p>
-
-            <div className="mefane-about-stats">
-              <div className="mefane-about-stat">
-                <strong>9+</strong>
-                <span>Regions Served</span>
-              </div>
-              <div className="mefane-about-stat">
-                <strong>80+</strong>
-                <span>Portfolio Showcase</span>
-              </div>
-            </div>
-
-            <div className="mefane-about-location">
-              <MapPin className="mefane-gold-light" />
-              <span>Serving Areas: <strong>Lesotho | South Africa</strong></span>
-            </div>
+      {/* WHY + REVIEWS */}
+      <section className="mtt-section">
+        <div className="mtt-wrap">
+          <h2>Why customers call us back</h2>
+          <div className="mtt-why">
+            {["Clear written quotes", "Quality fittings and materials", "Tidy, safe workmanship", "Fast response, both countries"].map((w) => (
+              <div key={w}><Verified /> {w}</div>
+            ))}
           </div>
-
+          <div className="mtt-reviews">
+            {REVIEWS.map(([q, a]) => (
+              <figure key={a}>
+                <div className="mtt-stars">{[0, 1, 2, 3, 4].map((s) => <Star key={s} fontSize="small" />)}</div>
+                <blockquote>{q}</blockquote>
+                <figcaption>{a}</figcaption>
+              </figure>
+            ))}
+          </div>
+          <p className="mtt-note">Sample reviews. Replace with your real customer feedback.</p>
         </div>
       </section>
 
-      {/* ========================================
-          COMPANIES I HAVE WORKED WITH
-      ========================================= */}
-      <section id="experience" className="mefane-section mefane-experience">
-        <div className="mefane-container">
-          <div className="mefane-section-header">
-            <div className="mefane-eyebrow">Work Experience</div>
-            <h2 className="mefane-section-title">
-              Companies I Have <span className="mefane-gradient-text">Worked With</span>
-            </h2>
-            <p className="mefane-section-description">
-              Trusted experience gained alongside respected businesses in Lesotho. Contact numbers are provided so you can verify my work.
-            </p>
-          </div>
-
-          <div className="mefane-company-grid">
-            {companies.map((company, index) => (
-              <article key={company.name} className="mefane-company-card">
-                <div className="mefane-company-number">{String(index + 1).padStart(2, "0")}</div>
-
-                <div className="mefane-company-top">
-                  <div className="mefane-company-icon">{company.icon}</div>
-                  <div className="mefane-company-heading">
-                    <span className="mefane-company-tag">{company.tag}</span>
-                    <h3>{company.name}</h3>
-                    {company.location && (
-                      <div className="mefane-company-location">
-                        <PinOutline style={{ fontSize: "15px" }} />
-                        {company.location}
-                      </div>
-                    )}
-                  </div>
-                </div>
-
-                <p className="mefane-company-description">{company.description}</p>
-
-                <div className="mefane-company-chips">
-                  {company.highlights.map((item) => (
-                    <span key={item} className="mefane-company-chip">
-                      <CheckCircle2 style={{ fontSize: "13px" }} />
-                      {item}
-                    </span>
-                  ))}
-                </div>
-
-                {company.phone && company.phoneHref ? (
-                  <a href={company.phoneHref} className="mefane-company-call">
-                    <span className="mefane-company-call-icon"><Phone style={{ fontSize: "18px" }} /></span>
-                    <span className="mefane-company-call-text">
-                      <small>{company.phoneNote ? `Contact (${company.phoneNote})` : "Contact"}</small>
-                      <strong>{company.phone}</strong>
-                    </span>
-                    <ChevronRight fontSize="small" />
-                  </a>
-                ) : (
-                  <div className="mefane-company-call mefane-company-call-empty">
-                    <span className="mefane-company-call-icon"><Handyman style={{ fontSize: "18px" }} /></span>
-                    <span className="mefane-company-call-text">
-                      <small>Field</small>
-                      <strong>Electrical &amp; Plumbing</strong>
-                    </span>
-                  </div>
-                )}
-              </article>
-            ))}
+      {/* EMERGENCY TIPS */}
+      <section className="mtt-section mtt-alt">
+        <div className="mtt-wrap">
+          <h2>Before we arrive</h2>
+          <p className="mtt-sub">Quick steps that limit the damage while you wait for us.</p>
+          <div className="mtt-services">
+            {TIPS.map(([h, d]) => <article key={h}><span className="mtt-ico"><Bolt /></span><h3>{h}</h3><p>{d}</p></article>)}
           </div>
         </div>
       </section>
 
-      {/* ========================================
-          PORTFOLIO SECTION (Pictures 1 to 37)
-      ========================================= */}
-      <section id="portfolio" className="mefane-section">
-        <div className="mefane-container">
-          <div className="mefane-section-header">
-            <div className="mefane-eyebrow">Portfolio Gallery</div>
-            <h2 className="mefane-section-title">Complete Project Archive</h2>
-            <p className="mefane-section-description">
-              Explore our comprehensive gallery showcasing elite residential and commercial engineering projects across Lesotho and South Africa. Click any image to inspect it in full detail.
-            </p>
-          </div>
-
-          <div className="mefane-category-list">
-            {portfolioCategories.map((category) => (
-              <button
-                type="button"
-                key={category}
-                onClick={() => setActiveCategory(category)}
-                className={`mefane-category ${activeCategory === category ? "active" : ""}`}
-              >
-                {category}
-              </button>
-            ))}
-          </div>
-
-          <div className="mefane-portfolio-grid">
-            {filteredPortfolio.map((item) => (
-              <div
-                key={item.id}
-                onClick={() => setSelectedImage(item)}
-                className="mefane-project"
-              >
-                <div className="mefane-project-image">
-                  <img src={item.image} alt={item.title} loading="lazy" />
-                  <div className="mefane-project-overlay"></div>
-                  <span className="mefane-project-number">#{item.id}</span>
-                  <div className="mefane-project-expand">
-                    <Maximize2 style={{ fontSize: "16px" }} />
-                  </div>
-                </div>
-                <div className="mefane-project-info">
-                  <div className="mefane-project-category">{item.category}</div>
-                  <h3 className="mefane-project-title">{item.title}</h3>
-                </div>
-              </div>
-            ))}
-          </div>
+      {/* FAQ */}
+      <section id="faq" className="mtt-section">
+        <div className="mtt-wrap mtt-narrow">
+          <h2>Questions</h2>
+          {FAQ.map(([q, a], i) => (
+            <div key={q} className={`mtt-faq ${faq === i ? "open" : ""}`}>
+              <button onClick={() => setFaq(faq === i ? null : i)} aria-expanded={faq === i}>{q}<Add /></button>
+              <div><p>{a}</p></div>
+            </div>
+          ))}
         </div>
       </section>
 
-      {/* ========================================
-          LIGHTBOX MODAL
-      ========================================= */}
-      {selectedImage && (
-        <div className="mefane-lightbox" onClick={() => setSelectedImage(null)}>
-          <div className="mefane-lightbox-content" onClick={(e) => e.stopPropagation()}>
-            <button
-              type="button"
-              onClick={() => setSelectedImage(null)}
-              className="mefane-lightbox-close"
-              aria-label="Close modal"
-            >
-              <X />
-            </button>
-            <img src={selectedImage.image} alt={selectedImage.title} className="mefane-lightbox-image" />
-            <div className="mefane-lightbox-info">
-              <div>
-                <span className="mefane-project-category">Picture #{selectedImage.id} • {selectedImage.category}</span>
-                <h3>{selectedImage.title}</h3>
-              </div>
-              <a href="#contact" onClick={() => setSelectedImage(null)} className="mefane-btn mefane-btn-primary">
-                Request Similar Project
-              </a>
-            </div>
-          </div>
-        </div>
-      )}
-
-      {/* ========================================
-          CONTACT SECTION
-      ========================================= */}
-      <section id="contact" className="mefane-section mefane-section-soft">
-        <div className="mefane-container mefane-contact-grid">
+      {/* CONTACT */}
+      <section id="contact" className="mtt-section mtt-dark">
+        <div className="mtt-wrap mtt-contact">
           <div>
-            <div className="mefane-eyebrow">Get In Touch</div>
-            <h2 className="mefane-contact-title">Call Us Today For Perfect Results</h2>
-            <p className="mefane-contact-description">
-              Every project big or small, we deliver excellence! Reach out directly via our official lines or visit us across our serving regions.
-            </p>
-
-            <div className="mefane-contact-cards">
-              <div className="mefane-contact-card">
-                <div className="mefane-contact-icon"><Phone /></div>
-                <div>
-                  <h4>Call Us Today</h4>
-                  <a href="tel:63740151">63740151</a> / <a href="tel:59619361">59619361</a>
-                </div>
-              </div>
-              <div className="mefane-contact-card">
-                <div className="mefane-contact-icon"><MapPin /></div>
-                <div>
-                  <h4>Serving Areas</h4>
-                  <span style={{ color: "white", fontWeight: 700, fontSize: "14px" }}>Lesotho | South Africa</span>
-                </div>
-              </div>
+            <h2>Get your free quote</h2>
+            <p className="mtt-sub">Fill the form and it opens WhatsApp with your details ready to send.</p>
+            <ul className="mtt-details">
+              <li><Phone /> <a href={`tel:${PHONE_1.replace(/\s/g, "")}`}>{PHONE_1}</a></li>
+              <li><Phone /> <a href={`tel:${PHONE_2.replace(/\s/g, "")}`}>{PHONE_2}</a></li>
+              <li><WhatsApp /> <a href={`https://wa.me/${WA}`} target="_blank" rel="noreferrer">Calls and WhatsApp</a></li>
+              <li><Email /> <a href={`mailto:${EMAIL}`}>{EMAIL}</a> <button className="mtt-copy" onClick={copyEmail}>{copied ? "Copied" : "Copy"}</button></li>
+              <li><LocationOn /> Lesotho and South Africa</li>
+              <li><ContactPage /> <button className="mtt-copy" onClick={saveContact}>Save our contact to your phone</button></li>
+            </ul>
+          </div>
+          <form onSubmit={sendQuote} className="mtt-form">
+            <label>Your name<input required value={form.name} onChange={set("name")} autoComplete="name" /></label>
+            <label>Phone<input required type="tel" value={form.phone} onChange={set("phone")} autoComplete="tel" /></label>
+            <label>Service
+              <select value={form.service} onChange={set("service")}>{SERVICES.map((s) => <option key={s.t}>{s.t}</option>)}</select>
+            </label>
+            <div className="mtt-row">
+              <label>Country<select value={form.country} onChange={set("country")}><option>Lesotho</option><option>South Africa</option></select></label>
+              <label>Town<input required value={form.place} onChange={set("place")} /></label>
             </div>
-          </div>
-
-          <div>
-            <form onSubmit={handleFormSubmit} className="mefane-form">
-              <h3>Request an Engineering Quote</h3>
-              <p>Fill out the form below and our professional team will get back to you promptly.</p>
-
-              <div className="mefane-form-grid">
-                <div className="mefane-field">
-                  <label htmlFor="name">Your Name</label>
-                  <input id="name" name="name" type="text" required placeholder="e.g. John Molefi" />
-                </div>
-                <div className="mefane-field">
-                  <label htmlFor="phone">Phone Number</label>
-                  <input id="phone" name="phone" type="tel" required placeholder="e.g. +266 ..." />
-                </div>
-              </div>
-
-              <div className="mefane-field full">
-                <label htmlFor="service">Service Required</label>
-                <select id="service" name="service" required>
-                  <option>Electrical Installations</option>
-                  <option>Plumbing Services</option>
-                  <option>Brick-laying & Construction</option>
-                  <option>Ceilings & Flooring / Tiling</option>
-                  <option>Freezer & Cold Room Maintenance</option>
-                  <option>Fixing Refrigerators</option>
-                  <option>Roofing</option>
-                  <option>General Home Renovations</option>
-                </select>
-              </div>
-
-              <div className="mefane-field full">
-                <label htmlFor="details">Project Details</label>
-                <textarea id="details" name="details" rows={4} required placeholder="Describe your project size, location, and requirements..."></textarea>
-              </div>
-
-              <button type="submit" className="mefane-btn mefane-btn-primary" style={{ width: "100%", marginTop: "10px" }}>
-                Submit Inquiry Now
-              </button>
-            </form>
-          </div>
+            <label>Job details<textarea rows={4} value={form.msg} onChange={set("msg")} /></label>
+            <button className="mtt-btn" type="submit"><WhatsApp fontSize="small" /> Send on WhatsApp</button>
+          </form>
         </div>
       </section>
 
-      {/* ========================================
-          FOOTER
-      ========================================= */}
-      <footer className="mefane-footer">
-        <div className="mefane-container mefane-footer-inner">
-          <div className="mefane-logo">
-            <div>
-              <div className="mefane-logo-name" style={{ fontSize: "16px" }}>MEFANE ENGINEERING</div>
-              <div className="mefane-logo-subtitle">We build. We fix. We care.</div>
-            </div>
-          </div>
-
-          <div className="mefane-footer-copy">
-            <p>© {new Date().getFullYear()} Mefane Engineering. All rights reserved.</p>
-            <strong>&quot;Your vision. Our expertise. Perfect results!&quot;</strong>
-          </div>
+      <footer className="mtt-footer">
+        <div className="mtt-wrap">
+          <img src={LOGO} alt="MTT" />
+          <span>© 2026 MTT Plumbers & Contractors. Lesotho and South Africa.</span>
         </div>
       </footer>
+
+      {/* FLOATING */}
+      <a className="mtt-fab" href={`https://wa.me/${WA}`} target="_blank" rel="noreferrer" aria-label="Chat on WhatsApp"><WhatsApp /></a>
+      {scrolled && <button className="mtt-top" aria-label="Back to top" onClick={() => window.scrollTo({ top: 0, behavior: "smooth" })}><KeyboardArrowUp /></button>}
+
+      <div className="mtt-bottombar">
+        <a href={`tel:${PHONE_1.replace(/\s/g, "")}`}><Phone fontSize="small" /> Call</a>
+        <a href={`https://wa.me/${WA}`} target="_blank" rel="noreferrer"><WhatsApp fontSize="small" /> WhatsApp</a>
+        <a href="#contact">Free quote</a>
+      </div>
+      {toast && <div className="mtt-toast" role="status">{toast}</div>}
+
+      {/* LIGHTBOX */}
+      {lightbox !== null && list[lightbox] && (
+        <div className="mtt-lb" role="dialog" aria-modal="true" onClick={() => setLightbox(null)}
+             onTouchStart={(e) => { touchX.current = e.touches[0].clientX; }}
+             onTouchEnd={(e) => { const d = e.changedTouches[0].clientX - touchX.current; if (Math.abs(d) > 50) step(d < 0 ? 1 : -1); }}>
+          <div className="mtt-lb-top" onClick={(e) => e.stopPropagation()}>
+            <span>Photo {list[lightbox].n} · {lightbox + 1} of {list.length}</span>
+            <div>
+              <button aria-label="Favourite" onClick={() => toggleFav(list[lightbox].n)}>{favs.includes(list[lightbox].n) ? <Favorite /> : <FavoriteBorder />}</button>
+              <button aria-label="Zoom" onClick={() => setZoom(!zoom)}><ZoomIn /></button>
+              <button aria-label={auto ? "Pause slideshow" : "Play slideshow"} onClick={() => setAuto(!auto)}>{auto ? <Pause /> : <PlayArrow />}</button>
+              <button aria-label="Share" onClick={() => shareLink(list[lightbox].n)}><Share /></button>
+              <a aria-label="Download" href={list[lightbox].src} download={`MTT-project-${list[lightbox].n}`}><Download /></a>
+              <button aria-label="Close" onClick={() => setLightbox(null)}><Close /></button>
+            </div>
+          </div>
+          <button className="mtt-lb-n prev" aria-label="Previous" onClick={(e) => { e.stopPropagation(); step(-1); }}><ChevronLeft /></button>
+          <div className={`mtt-lb-stage ${zoom ? "zoom" : ""}`} onClick={(e) => e.stopPropagation()}>
+            <img src={list[lightbox].src} alt={`MTT project ${list[lightbox].n}`} onClick={() => setZoom(!zoom)} />
+          </div>
+          <button className="mtt-lb-n next" aria-label="Next" onClick={(e) => { e.stopPropagation(); step(1); }}><ChevronRight /></button>
+          <div className="mtt-lb-bottom" onClick={(e) => e.stopPropagation()}>
+            <a className="mtt-btn mtt-btn-sm" target="_blank" rel="noreferrer"
+               href={`https://wa.me/${WA}?text=${encodeURIComponent(`Hi MTT, I saw project photo ${list[lightbox].n} on your website and want something similar.`)}`}>
+              <WhatsApp fontSize="small" /> Ask about a job like this
+            </a>
+            <div className="mtt-thumbs">
+              {list.map((p, i) => <button key={p.n} className={`mtt-thumb ${i === lightbox ? "on" : ""}`} onClick={() => { setZoom(false); setLightbox(i); }} aria-label={`Photo ${p.n}`}><img src={p.src} alt="" loading="lazy" /></button>)}
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }
