@@ -32,13 +32,16 @@ const SERVICES = [
   { i: <Tv />, t: "Streaming and smart-home setup", d: "Smart TVs, streaming boxes, cameras and devices connected properly." },
 ];
 
-const BANDS = [
-  { m: 25, n: "Light", d: "1–2 people, browsing, email, music" },
-  { m: 50, n: "Home", d: "2–3 people, HD streaming, video calls" },
-  { m: 100, n: "Family", d: "3–5 people, several screens at once" },
-  { m: 200, n: "Power", d: "Work from home, gaming, 4K streaming" },
-  { m: 500, n: "Studio", d: "Creators, large uploads, busy homes" },
-  { m: 1000, n: "Business", d: "Teams, cloud backups, heavy use" },
+const BANDS: { m: number; u: number; hd: number; k: number }[] = [
+  { m: 25, u: 25, hd: 5, k: 1 },
+  { m: 50, u: 25, hd: 10, k: 2 },
+  { m: 50, u: 50, hd: 10, k: 2 },
+  { m: 100, u: 50, hd: 20, k: 4 },
+  { m: 100, u: 100, hd: 20, k: 4 },
+  { m: 200, u: 100, hd: 40, k: 8 },
+  { m: 200, u: 200, hd: 40, k: 8 },
+  { m: 300, u: 150, hd: 60, k: 12 },
+  { m: 500, u: 250, hd: 100, k: 20 },
 ];
 
 const USES: [string, number][] = [["Browsing and social", 5], ["Streaming and calls", 15], ["Gaming and remote work", 25]];
@@ -386,12 +389,14 @@ export default function Home() {
           </button>
           <div>
             <h2>Hi, I'm Lebo</h2>
-            <p className="lf-sub">I help people get fast, stable internet without the confusion. From choosing the right fibre to making sure Wi-Fi reaches every room, I deal with you directly and keep things simple.</p>
+            <p className="lf-sub">I help people get fast, stable internet without the confusion. From choosing the right internet connection (Fibre & LTE), I deal with you directly and keep things simple.</p>
             <ul className="lf-pts">
               <li><Check /> Plain-language advice, no jargon</li>
               <li><Check /> Messages answered on WhatsApp</li>
               <li><Check /> Homes, shops and offices</li>
-              <li><Check /> Setup tested before I leave</li>
+              <li><Check /> Setup tested before Technician leaves</li>
+              <li><Check /> A dedicated internet specialist</li>
+              <li><Check /> One go to person throughout the service</li>
             </ul>
             <div className="lf-cta">
               <a className="lf-btn" href={wa("Hi Lebo, I would like to talk about my internet.")} target="_blank" rel="noreferrer"><WhatsApp /> Chat to Lebo</a>
@@ -432,14 +437,16 @@ export default function Home() {
               </fieldset>
               <div className="lf-rec">
                 <span>We suggest</span>
-                <strong>{rec.n}: {rec.m >= 1000 ? "1 Gbps" : `${rec.m} Mbps`}</strong>
+                <strong>{rec.m} Mbps</strong>
                 <a className="lf-btn" href={wa(`Hi Lebo Fibre, ${people} people, mostly ${USES[use][0].toLowerCase()}. Please quote me on ${rec.m} Mbps fibre.`)} target="_blank" rel="noreferrer"><WhatsApp /> Get this quote</a>
               </div>
             </div>
             <div className="lf-bands">
               {BANDS.map((b) => (
-                <div key={b.m} className={`lf-band ${b.m === rec.m ? "on" : ""}`}>
-                  <b>{b.m >= 1000 ? "1 Gbps" : `${b.m} Mbps`}</b><span>{b.n}</span><small>{b.d}</small>
+                <div key={`${b.m}-${b.u}`} className={`lf-band ${b === rec ? "on" : ""}`}>
+                  <b>{b.m} Download</b><span>{b.u} Upload Mbps</span>
+                  <small className="lf-dev">HD Video streaming: {b.hd} devices</small>
+                  <small className="lf-dev">4K Video streaming: {b.k} {b.k === 1 ? "device" : "devices"}</small>
                 </div>
               ))}
             </div>

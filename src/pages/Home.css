@@ -289,3 +289,6 @@
 .lf-ai > .lf-btn { margin: 0 14px 14px; }
 @media (max-width: 700px) { .lf-ai-fab { bottom: 76px; } .lf-ai { bottom: 146px; left: 12px; width: calc(100% - 24px); } }
 @media (prefers-reduced-motion: reduce) { .lf .lf-rv { opacity: 1; transform: none; } }
+
+.lf-band .lf-dev { color: var(--ink, inherit); font-weight: 600; }
+.lf-band .lf-dev:first-of-type { margin-top: 6px; }
